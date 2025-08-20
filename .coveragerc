@@ -1,0 +1,6 @@
+[run]
+source = psyas
+omit = 
+    tests/*
+    autoapp.py
+
