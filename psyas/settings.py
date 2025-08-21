@@ -13,7 +13,15 @@ env.read_env()
 
 ENV = env.str("FLASK_ENV", default="production")
 DEBUG = ENV == "development"
-SQLALCHEMY_DATABASE_URI = env.str("DATABASE_URL")
+
+# 关键修改：数据库连接地址（支持MySQL，兼容原有的环境变量方式）
+# 1. 优先从环境变量 DATABASE_URL 读取（.env文件中配置）
+# 2. 若未配置，默认使用MySQL连接（适配Docker环境）
+SQLALCHEMY_DATABASE_URI = env.str(
+    "DATABASE_URL",
+    default="mysql+pymysql://root:123456@localhost:3306/psychology_agent"
+)
+
 SECRET_KEY = env.str("SECRET_KEY")
 SEND_FILE_MAX_AGE_DEFAULT = env.int("SEND_FILE_MAX_AGE_DEFAULT")
 BCRYPT_LOG_ROUNDS = env.int("BCRYPT_LOG_ROUNDS", default=13)
