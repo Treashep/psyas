@@ -19,7 +19,7 @@ DEBUG = ENV == "development"
 # 2. 若未配置，默认使用MySQL连接（适配Docker环境）
 SQLALCHEMY_DATABASE_URI = env.str(
     "DATABASE_URL",
-    default="mysql+pymysql://root:123456@localhost:3306/psychology_agent"
+    default="mysql+pymysql://root:123456@localhost:3306/psychology_agent",
 )
 
 SECRET_KEY = env.str("SECRET_KEY")
