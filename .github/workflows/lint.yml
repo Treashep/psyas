@@ -10,7 +10,7 @@ jobs:
       DATABASE_URL: "sqlite:///:memory:"  # 测试用数据库
       FLASK_APP: "psyas/app.py"          # 应用入口
       SECRET_KEY: "test-secret-key-for-github-actions"  # 测试用密钥（仅用于CI环境）
-
+      SEND_FILE_MAX_AGE_DEFAULT: 3600
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
