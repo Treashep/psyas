@@ -3,24 +3,29 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "never"  # 暂停npm依赖自动更新
+      interval: "daily"  # 保留合法的时间间隔
+    open-pull-requests-limit: 0  # 限制为0个PR，即不自动创建
 
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
-      interval: "never"  # 暂停Docker依赖自动更新
+      interval: "daily"
+    open-pull-requests-limit: 0
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "never"  # 暂停GitHub Actions依赖自动更新
+      interval: "daily"
+    open-pull-requests-limit: 0
 
   - package-ecosystem: "pip"
     directory: "/requirements"
     schedule:
-      interval: "never"  # 暂停requirements目录下的pip依赖自动更新
+      interval: "daily"
+    open-pull-requests-limit: 0
 
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "never"  # 暂停根目录下的pip依赖自动更新
+      interval: "daily"
+    open-pull-requests-limit: 0
