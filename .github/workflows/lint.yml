@@ -17,6 +17,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements/dev.txt
       - name: Run Python lints
-        run: flask lint --check
+        run: |
+          # 关键：设置 FLASK_APP 指向应用入口
+          export FLASK_APP=app.py
+          flask lint --check
       - name: Run Python tests
-        run: flask test
+        run: |
+          # 测试命令也需要指定 FLASK_APP
+          export FLASK_APP=app.py
+          flask test
