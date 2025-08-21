@@ -3,24 +3,24 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "never"  # 暂停npm依赖自动更新
 
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "never"  # 暂停Docker依赖自动更新
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "never"  # 暂停GitHub Actions依赖自动更新
 
   - package-ecosystem: "pip"
     directory: "/requirements"
     schedule:
-      interval: "daily"
+      interval: "never"  # 暂停requirements目录下的pip依赖自动更新
 
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "never"  # 暂停根目录下的pip依赖自动更新
