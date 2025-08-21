@@ -89,8 +89,6 @@ def configure_logger(app):
     handler = logging.StreamHandler(sys.stdout)
     if not app.logger.handlers:
         app.logger.addHandler(handler)
-
-
 if __name__ == "__main__":
     app = create_app()  # 调用应用工厂，触发数据库测试
     app.run(debug=True)  # 启动服务器，开启调试模式
