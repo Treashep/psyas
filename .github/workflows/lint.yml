@@ -6,6 +6,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # 添加环境变量
+    env:
+      DATABASE_URL: "sqlite:///:memory:"  # 测试用的 SQLite 内存数据库
+      FLASK_APP: "psyas/app.py"          # 统一设置 FLASK_APP 环境变量
+
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -17,12 +22,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements/dev.txt
       - name: Run Python lints
-        run: |
-          # 关键：设置 FLASK_APP 指向应用入口
-          export FLASK_APP=psyas/app.py
-          flask lint --check
+        run: flask lint --check  # 无需重复设置 FLASK_APP，已在 env 中定义
       - name: Run Python tests
-        run: |
-          # 测试命令也需要指定 FLASK_APP
-          export FLASK_APP=psyas/app.py
-          flask test
+        run: flask test          # 无需重复设置 FLASK_APP，已在 env 中定义
