@@ -19,10 +19,10 @@ jobs:
       - name: Run Python lints
         run: |
           # 关键：设置 FLASK_APP 指向应用入口
-          export FLASK_APP=app.py
+          export FLASK_APP=psyas/app.py
           flask lint --check
       - name: Run Python tests
         run: |
           # 测试命令也需要指定 FLASK_APP
-          export FLASK_APP=app.py
+          export FLASK_APP=psyas/app.py
           flask test
