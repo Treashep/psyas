@@ -58,6 +58,7 @@ def user(db):
 def pytest_collection_modifyitems(items):
     """
     自动识别并跳过包含前端相关关键词的测试用例.
+
     关键词：login、log_in、register、signup（不区分大小写）.
     """
     # 定义需要跳过的测试关键词（可根据实际测试命名调整）
