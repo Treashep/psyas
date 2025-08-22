@@ -33,7 +33,9 @@ def create_app(config_object="psyas.settings"):
 
     # 验证关键配置是否加载
     if "CORS_ORIGINS" not in app.config:
-        raise ValueError(f"配置文件 {config_object} 中未找到 CORS_ORIGINS，请检查 settings.py")
+        raise ValueError(
+            f"配置文件 {config_object} 中未找到 CORS_ORIGINS，请检查 settings.py"
+        )
 
     register_extensions(app)  # 先注册扩展，保持一致性
 
@@ -57,6 +59,7 @@ def create_app(config_object="psyas.settings"):
     register_frontend_routes(app)  # 注册前端路由
 
     return app
+
 
 # 以下函数保持不变，无需修改
 def register_extensions(app):

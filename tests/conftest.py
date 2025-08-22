@@ -61,7 +61,7 @@ def pytest_collection_modifyitems(items):
     关键词：login、log_in、register、signup（不区分大小写）.
     """
     # 定义需要跳过的测试关键词（可根据实际测试命名调整）
-    frontend_keywords = re.compile(r'login|log_in|register|signup', re.IGNORECASE)
+    frontend_keywords = re.compile(r"login|log_in|register|signup", re.IGNORECASE)
 
     for item in items:
         # 检查测试用例名称是否包含前端相关关键词
