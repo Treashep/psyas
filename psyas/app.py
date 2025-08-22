@@ -20,7 +20,7 @@ from psyas.extensions import (  # 移除了未使用的csrf_protect
 
 
 def create_app(config_object="psyas.settings"):
-    """Create application factory for前后端分离架构。"""  # 已修复（末尾有句号）
+    """Create application factory for前后端分离架构."""  # 已修复（末尾有句号）
     # 关键修改：指定静态文件目录为 Vue 打包的 dist 目录，去掉 URL 中的 /static 前缀
     app = Flask(
         __name__.split(".")[0],
@@ -114,7 +114,7 @@ def configure_logger(app):
 
 
 def register_frontend_routes(app):
-    """新增：注册前端页面路由（生产环境）和测试 API。"""  # 修复：末尾添加句号
+    """新增：注册前端页面路由（生产环境）和测试 API."""  # 修复：末尾添加句号
     static_dist = os.path.join(app.root_path, "static", "dist")
 
     # 测试 API 接口

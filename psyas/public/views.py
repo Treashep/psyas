@@ -24,7 +24,7 @@ def load_user(user_id):
 # ============= 新增 API 路由（供 Vue 前端调用） =============
 @blueprint.route("/api/login/", methods=["POST"])
 def api_login():
-    """新：登录 API（返回 JSON）。"""
+    """新：登录 API（返回 JSON）."""
     form = LoginForm(request.form)
     if form.validate_on_submit():
         login_user(form.user)
@@ -55,14 +55,14 @@ def api_login():
 @blueprint.route("/api/logout/", methods=["POST"])
 @login_required
 def api_logout():
-    """新：登出 API（返回 JSON）。"""
+    """新：登出 API（返回 JSON）."""
     logout_user()
     return jsonify({"status": "success", "message": "Logged out successfully"})
 
 
 @blueprint.route("/api/register/", methods=["POST"])
 def api_register():
-    """新：注册 API（返回 JSON）。"""
+    """新：注册 API（返回 JSON）."""
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         User.create(
@@ -90,7 +90,7 @@ def api_register():
 @blueprint.route("/api/user/", methods=["GET"])
 @login_required
 def api_user_info():
-    """新：获取当前用户信息（示例）。"""
+    """新：获取当前用户信息（示例）."""
     return jsonify(
         {
             "id": current_user.id,
