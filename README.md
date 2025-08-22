@@ -1,6 +1,26 @@
 # 心理分析助手
 
 
+## 协作流程
+一、分支类型及用途​
+master/main：生产环境分支，存放可部署的稳定代码，受保护，仅通过 PR 合并。​
+develop：开发集成分支，用于功能集成和测试，从 master 创建。​
+feature/xxx：功能分支，从 develop 创建，命名格式为 feature / 功能描述，用于开发新功能。​
+bugfix/xxx：修复分支，从 develop 创建，命名格式为 bugfix / 问题描述，用于修复开发中的 bug。​
+
+二、核心操作流程​
+（一）初始化分支（管理员操作）​
+克隆仓库：git clone <远程仓库地址>​
+创建并切换到 develop 分支：git checkout -b develop​
+推送 develop 分支到远程：git push -u origin develop​
+（二）日常开发（开发者操作）​
+同步远程分支信息：git fetch origin​
+切换到 develop 分支并拉取最新代码：git checkout develop，git pull origin develop​
+创建功能分支：git checkout -b feature/功能名称​
+开发完成后，提交代码：git add .，git commit -m "描述信息"​
+推送功能分支到远程：git push -u origin feature/功能名称​
+在远程仓库发起 PR，将功能分支合并到 develop​
+审核通过后合并，删除远程功能分支
 
 ## Docker Quickstart
 
