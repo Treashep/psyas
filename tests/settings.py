@@ -11,3 +11,4 @@ DEBUG_TB_ENABLED = False
 CACHE_TYPE = "flask_caching.backends.SimpleCache"  # Can be "memcached", "redis", etc.
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 WTF_CSRF_ENABLED = False  # Allows form testing
+CORS_ORIGINS = ["http://localhost:8080", "http://127.0.0.1:8080"]
