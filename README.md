@@ -23,7 +23,7 @@ bugfix/xxx：修复分支，从 develop 创建，命名格式为 bugfix / 问题
 
 同步远程分支信息：git fetch origin​
 
-切换到 develop 分支并拉取最新代码：git checkout develop，git pull origin develop​
+切换到 develop 分支并拉取最新代码：git checkout develop，git pull origin develop​(拉取前，先注意远程仓库中是否有新分支，有的话要先git fetch origin)
 
 创建功能分支：git checkout -b feature/功能名称​
 
