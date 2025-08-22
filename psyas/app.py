@@ -2,8 +2,9 @@
 """The app module, containing the app factory function."""
 import logging
 import sys
-
-from flask import Flask, render_template
+import os
+from flask import Flask, jsonify, send_from_directory
+from flask_cors import CORS  # 新增：导入 CORS 处理跨域
 
 from psyas import commands, public, user
 from psyas.extensions import (
@@ -19,27 +20,43 @@ from psyas.extensions import (
 
 
 def create_app(config_object="psyas.settings"):
-    """Create application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
-
-    :param config_object: The configuration object to use.
-    """
-    app = Flask(__name__.split(".")[0])
+    """Create application factory for前后端分离架构."""
+    # 关键修改：指定静态文件目录为 Vue 打包的 dist 目录，去掉 URL 中的 /static 前缀
+    app = Flask(
+        __name__.split(".")[0],
+        static_folder=os.path.join(os.path.dirname(__file__), "static", "dist"),  # 指向 dist 目录
+        static_url_path=""  # 静态资源 URL 不带 /static 前缀
+    )
     app.config.from_object(config_object)
+
+    # 开发环境启用 CORS
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": app.config["CORS_ORIGINS"],
+            "supports_credentials": True
+        }
+    })
+
     register_extensions(app)
     register_blueprints(app)
     register_errorhandlers(app)
     register_shellcontext(app)
     register_commands(app)
     configure_logger(app)
+
+    # 注册前端页面路由和 API 示例
+    register_frontend_routes(app)
+
     return app
 
 
+# 以下函数保持不变，无需修改
 def register_extensions(app):
     """Register Flask extensions."""
     bcrypt.init_app(app)
     cache.init_app(app)
     db.init_app(app)
-    csrf_protect.init_app(app)
+    # csrf_protect.init_app(app)  # 前后端分离场景暂不启用 CSRF
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
@@ -48,21 +65,21 @@ def register_extensions(app):
 
 
 def register_blueprints(app):
-    """Register Flask blueprints."""
+    """Register Flask blueprints (API 蓝图)."""
     app.register_blueprint(public.views.blueprint)
     app.register_blueprint(user.views.blueprint)
     return None
 
 
 def register_errorhandlers(app):
-    """Register error handlers."""
-
+    """Register error handlers (返回 JSON 而非 HTML)."""
     def render_error(error):
-        """Render error template."""
-        # If a HTTPException, pull the `code` attribute; default to 500
         error_code = getattr(error, "code", 500)
-        return render_template(f"{error_code}.html"), error_code
-
+        return jsonify({
+            "error": True,
+            "message": str(error),
+            "code": error_code
+        }), error_code
     for errcode in [401, 404, 500]:
         app.errorhandler(errcode)(render_error)
     return None
@@ -70,11 +87,8 @@ def register_errorhandlers(app):
 
 def register_shellcontext(app):
     """Register shell context objects."""
-
     def shell_context():
-        """Shell context objects."""
         return {"db": db, "User": user.models.User}
-
     app.shell_context_processor(shell_context)
 
 
@@ -91,6 +105,25 @@ def configure_logger(app):
         app.logger.addHandler(handler)
 
 
+def register_frontend_routes(app):
+    """新增：注册前端页面路由（生产环境）和测试 API"""
+    static_dist = os.path.join(app.root_path, "static", "dist")
+
+    # 测试 API 接口
+    @app.route("/api/hello")
+    def api_hello():
+        return jsonify({
+            "message": "Hello from Flask API!",
+            "status": "success"
+        })
+
+    # 前端页面入口
+    @app.route("/", defaults={"path": ""})
+    @app.route("/<path:path>")
+    def frontend_index(path):
+        return send_from_directory(static_dist, "index.html")
+
+
 if __name__ == "__main__":
-    app = create_app()  # 调用应用工厂，触发数据库测试
-    app.run(debug=True)  # 启动服务器，开启调试模式
+    app = create_app()
+    app.run(debug=True)
