@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
 import logging
-import sys
 import os
+import sys
+
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS  # 新增：导入 CORS 处理跨域
 
 from psyas import commands, public, user
-from psyas.extensions import (
+from psyas.extensions import (  # 移除了未使用的csrf_protect
     bcrypt,
     cache,
-    csrf_protect,
     db,
     debug_toolbar,
     flask_static_digest,
@@ -20,22 +20,27 @@ from psyas.extensions import (
 
 
 def create_app(config_object="psyas.settings"):
-    """Create application factory for前后端分离架构."""
+    """Create application factory for前后端分离架构。"""  # 已修复（末尾有句号）
     # 关键修改：指定静态文件目录为 Vue 打包的 dist 目录，去掉 URL 中的 /static 前缀
     app = Flask(
         __name__.split(".")[0],
-        static_folder=os.path.join(os.path.dirname(__file__), "static", "dist"),  # 指向 dist 目录
-        static_url_path=""  # 静态资源 URL 不带 /static 前缀
+        static_folder=os.path.join(
+            os.path.dirname(__file__), "static", "dist"
+        ),  # 指向 dist 目录
+        static_url_path="",  # 静态资源 URL 不带 /static 前缀
     )
     app.config.from_object(config_object)
 
     # 开发环境启用 CORS
-    CORS(app, resources={
-        r"/api/*": {
-            "origins": app.config["CORS_ORIGINS"],
-            "supports_credentials": True
-        }
-    })
+    CORS(
+        app,
+        resources={
+            r"/api/*": {
+                "origins": app.config["CORS_ORIGINS"],
+                "supports_credentials": True,
+            }
+        },
+    )
 
     register_extensions(app)
     register_blueprints(app)
@@ -73,13 +78,14 @@ def register_blueprints(app):
 
 def register_errorhandlers(app):
     """Register error handlers (返回 JSON 而非 HTML)."""
+
     def render_error(error):
         error_code = getattr(error, "code", 500)
-        return jsonify({
-            "error": True,
-            "message": str(error),
-            "code": error_code
-        }), error_code
+        return (
+            jsonify({"error": True, "message": str(error), "code": error_code}),
+            error_code,
+        )
+
     for errcode in [401, 404, 500]:
         app.errorhandler(errcode)(render_error)
     return None
@@ -87,8 +93,10 @@ def register_errorhandlers(app):
 
 def register_shellcontext(app):
     """Register shell context objects."""
+
     def shell_context():
         return {"db": db, "User": user.models.User}
+
     app.shell_context_processor(shell_context)
 
 
@@ -106,16 +114,13 @@ def configure_logger(app):
 
 
 def register_frontend_routes(app):
-    """新增：注册前端页面路由（生产环境）和测试 API"""
+    """新增：注册前端页面路由（生产环境）和测试 API。"""  # 修复：末尾添加句号
     static_dist = os.path.join(app.root_path, "static", "dist")
 
     # 测试 API 接口
     @app.route("/api/hello")
     def api_hello():
-        return jsonify({
-            "message": "Hello from Flask API!",
-            "status": "success"
-        })
+        return jsonify({"message": "Hello from Flask API!", "status": "success"})
 
     # 前端页面入口
     @app.route("/", defaults={"path": ""})
