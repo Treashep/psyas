@@ -59,4 +59,4 @@ env/
 # Development database
 *.db
 #数据库迁移目录
-migrations/ 
+migrations/
