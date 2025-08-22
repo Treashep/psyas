@@ -20,40 +20,43 @@ from psyas.extensions import (  # 移除了未使用的csrf_protect
 
 
 def create_app(config_object="psyas.settings"):
-    """Create application factory for前后端分离架构."""  # 已修复（末尾有句号）
-    # 关键修改：指定静态文件目录为 Vue 打包的 dist 目录，去掉 URL 中的 /static 前缀
+    """创建适用于前后端分离架构的应用工厂函数."""
+    # 初始化 Flask 应用，指定静态文件目录
     app = Flask(
         __name__.split(".")[0],
-        static_folder=os.path.join(
-            os.path.dirname(__file__), "static", "dist"
-        ),  # 指向 dist 目录
-        static_url_path="",  # 静态资源 URL 不带 /static 前缀
+        static_url_path="",  # 先设置 URL 前缀，后续再设置目录
     )
     app.config.from_object(config_object)
 
-    # 开发环境启用 CORS
-    CORS(
-        app,
-        resources={
-            r"/api/*": {
-                "origins": app.config["CORS_ORIGINS"],
-                "supports_credentials": True,
-            }
-        },
-    )
+    # 延迟设置 static_folder（此时 app.root_path 已被 Flask 正确识别）
+    app.static_folder = os.path.join(app.root_path, "static", "dist")
 
-    register_extensions(app)
+    # 验证关键配置是否加载
+    if "CORS_ORIGINS" not in app.config:
+        raise ValueError(f"配置文件 {config_object} 中未找到 CORS_ORIGINS，请检查 settings.py")
+
+    register_extensions(app)  # 先注册扩展，保持一致性
+
+    # 仅在开发环境启用 CORS
+    if app.config["ENV"] == "development":
+        CORS(
+            app,
+            resources={
+                r"/api/*": {
+                    "origins": app.config["CORS_ORIGINS"],
+                    "supports_credentials": True,
+                }
+            },
+        )
+
     register_blueprints(app)
     register_errorhandlers(app)
     register_shellcontext(app)
     register_commands(app)
     configure_logger(app)
-
-    # 注册前端页面路由和 API 示例
-    register_frontend_routes(app)
+    register_frontend_routes(app)  # 注册前端路由
 
     return app
-
 
 # 以下函数保持不变，无需修改
 def register_extensions(app):
