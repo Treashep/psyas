@@ -57,6 +57,7 @@ def create_app(config_object="psyas.settings"):
     configure_logger(app)
     register_frontend_routes(app)  # 注册前端路由
     from psyas.routes.test_routes import test_bp
+
     # 注册蓝图（接口生效）
     app.register_blueprint(test_bp)
     return app
