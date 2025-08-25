@@ -27,7 +27,6 @@ def create_app(config_object="psyas.settings"):
         static_url_path="",  # 先设置 URL 前缀，后续再设置目录
     )
     app.config.from_object(config_object)
-
     # 延迟设置 static_folder（此时 app.root_path 已被 Flask 正确识别）
     app.static_folder = os.path.join(app.root_path, "static", "dist")
 
@@ -57,7 +56,9 @@ def create_app(config_object="psyas.settings"):
     register_commands(app)
     configure_logger(app)
     register_frontend_routes(app)  # 注册前端路由
-
+    from psyas.routes.test_routes import test_bp
+    # 注册蓝图（接口生效）
+    app.register_blueprint(test_bp)
     return app
 
 
