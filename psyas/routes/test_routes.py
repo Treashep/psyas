@@ -1,4 +1,3 @@
-from Tools.scripts.fixnotice import process
 from flask import Blueprint, jsonify, request  # 核心工具
 from psyas.extensions import db
 from psyas.user.models import User
