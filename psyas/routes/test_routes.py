@@ -2,7 +2,7 @@
 """测试路由相关的单元测试模块."""
 from flask import Blueprint, jsonify, request  # 核心工具
 
-test_bp = Blueprint("test", __name__, url_prefix="/api/test")
+test_bp = Blueprint("test", __name__, url_prefix="/test")
 
 
 # 测试接口 1：基础连接测试
