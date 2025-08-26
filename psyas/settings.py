@@ -56,8 +56,6 @@ CACHE_REDIS_URL = env.str(
 
 # 7. 跨域配置（前后端分离新增）
 # 开发环境允许的前端域名（默认 Vue 开发服务器）
-CORS_ORIGINS = env.list(
-    "CORS_ORIGINS", default=["http://localhost:8080", "http://127.0.0.1:8080"]
-)
+CORS_ORIGINS = env.list("CORS_ORIGINS", default=["http://localhost:5000"])
 # 生产环境可通过 .env 文件设置为自己的前端域名，例如：
 # CORS_ORIGINS=["https://your-frontend.com"]

@@ -24,42 +24,39 @@ def create_app(config_object="psyas.settings"):
     # 初始化 Flask 应用，指定静态文件目录
     app = Flask(
         __name__.split(".")[0],
-        static_url_path="",  # 先设置 URL 前缀，后续再设置目录
+        static_url_path="",
     )
     app.config.from_object(config_object)
-    # 延迟设置 static_folder（此时 app.root_path 已被 Flask 正确识别）
     app.static_folder = os.path.join(app.root_path, "static", "dist")
 
-    # 验证关键配置是否加载
-    if "CORS_ORIGINS" not in app.config:
-        raise ValueError(
-            f"配置文件 {config_object} 中未找到 CORS_ORIGINS，请检查 settings.py"
-        )
+    # 先注册扩展，保证扩展初始化顺序正确
+    register_extensions(app)
 
-    register_extensions(app)  # 先注册扩展，保持一致性
-
-    # 仅在开发环境启用 CORS
-    if app.config["ENV"] == "development":
+    # ---------- 重点：CORS 跨域配置 ----------
+    # 开发环境直接放开跨域（方便调试），生产环境再严格限制
+    if app.config.get("ENV") == "development":
+        # 允许前端 http://localhost:8080 跨域访问所有路径（实际可根据需求缩小范围）
         CORS(
             app,
-            resources={
-                r"/api/*": {
-                    "origins": app.config["CORS_ORIGINS"],
-                    "supports_credentials": True,
-                }
-            },
+            origins="http://localhost:8080",  # 明确前端运行地址
+            supports_credentials=True,  # 允许携带 cookie
+            methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            allow_headers=["Content-Type", "Authorization"],
         )
+    # ---------- CORS 配置结束 ----------
 
     register_blueprints(app)
     register_errorhandlers(app)
     register_shellcontext(app)
     register_commands(app)
     configure_logger(app)
-    register_frontend_routes(app)  # 注册前端路由
+    register_frontend_routes(app)
+
+    # 注册测试接口蓝图
     from psyas.routes.test_routes import test_bp
 
-    # 注册蓝图（接口生效）
     app.register_blueprint(test_bp)
+
     return app
 
 
@@ -134,7 +131,11 @@ def register_frontend_routes(app):
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def frontend_index(path):
-        return send_from_directory(static_dist, "index.html")
+        # 关键：如果是 API 路径，不转发给前端（让后端正常处理）
+        if not path.startswith("api/"):
+            return send_from_directory(static_dist, "index.html")
+            # API 请求由蓝图处理
+        return jsonify({"error": "API 路径错误"}), 404
 
 
 if __name__ == "__main__":
