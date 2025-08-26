@@ -21,6 +21,3 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
-# 忽略环境配置文件
-frontend/.env.development
-frontend/.env.production
