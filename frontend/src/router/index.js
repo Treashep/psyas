@@ -1,7 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router';
+// src/router/index.js
+import { createRouter, createWebHashHistory } from 'vue-router';
 import TestBackend from '@/views/TestBackend.vue';
 
 const routes = [
+  {
+    path: '/',
+    redirect: '/test-backend'  // 访问 / 时重定向到测试页面
+  },
   {
     path: '/test-backend',
     name: 'TestBackend',
@@ -10,7 +15,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHashHistory(), // 哈希模式，路径带 #
   routes
 });
 

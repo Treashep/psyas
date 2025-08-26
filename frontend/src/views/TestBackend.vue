@@ -1,69 +1,132 @@
 <template>
-  <div class="test-backend">
-    <h2>前后端连接测试</h2>
+  <div class="test-page">
+    <h2>后端接口测试页面</h2>
 
-    <!-- 测试 1：基础连接 -->
+    <!-- 测试接口1：基础连接 -->
     <div class="test-item">
-      <button @click="testHello">测试 GET 接口</button>
-      <p v-if="helloMsg">{{ helloMsg }}</p>
+      <button @click="handleTestHello">测试接口1：基础连接（/api/test/hello）</button>
+      <div v-if="helloResult" class="result-box">
+        <p>接口1返回结果：</p>
+        <pre>{{ JSON.stringify(helloResult, null, 2) }}</pre>
+      </div>
     </div>
 
-    <!-- 测试 2：查询用户 -->
+    <!-- 测试接口2：用户数据处理 -->
     <div class="test-item">
-      <input v-model="username" placeholder="输入用户名" />
-      <button @click="testGetUser">查询用户</button>
-      <p v-if="userData">{{ userData }}</p>
+      <button @click="handleTestCreateUser">测试接口2：用户数据处理（/api/test/users）</button>
+      <div v-if="userResult" class="result-box">
+        <p>接口2返回结果：</p>
+        <pre>{{ JSON.stringify(userResult, null, 2) }}</pre>
+      </div>
     </div>
 
-    <!-- 测试 3：创建用户 -->
+    <!-- 测试接口3：问候语生成 -->
     <div class="test-item">
-      <input v-model="newUser.username" placeholder="新用户名" />
-      <input v-model="newUser.email" placeholder="新用户邮箱" />
-      <button @click="testCreateUser">创建用户</button>
-      <p v-if="createMsg">{{ createMsg }}</p>
+      <input
+        v-model="userName"
+        placeholder="请输入姓名（可选）"
+        class="name-input"
+      >
+      <button @click="handleTestGreet">测试接口3：问候语生成（/api/test/greet）</button>
+      <div v-if="greetResult" class="result-box">
+        <p>接口3返回结果：</p>
+        <pre>{{ JSON.stringify(greetResult, null, 2) }}</pre>
+      </div>
     </div>
   </div>
 </template>
 
-<script>
-import request from '@/utils/request';
+<script setup>
+import { ref } from 'vue'
+// 导入接口调用方法
+import { testHello, testCreateUser, testGreet } from '@/api/testApi'
 
-export default {
-  data() {
-    return {
-      helloMsg: '',
-      username: '默认用户',
-      userData: '',
-      newUser: { username: '', email: '' },
-      createMsg: ''
-    };
-  },
-  methods: {
-    async testHello() {
-      const res = await request.get('/test/hello');
-      this.helloMsg = res.message;
-    },
-    async testGetUser() {
-      const res = await request.get('/test/user', {
-        params: { username: this.username }
-      });
-      this.userData = JSON.stringify(res.data);
-    },
-    async testCreateUser() {
-      if (!this.newUser.username || !this.newUser.email) {
-        this.createMsg = '请填写完整信息';
-        return;
-      }
-      const res = await request.post('/test/user', this.newUser);
-      this.createMsg = res.message;
-      this.newUser = { username: '', email: '' }; // 清空输入
-    }
+// 存储接口返回结果
+const helloResult = ref(null)
+const userResult = ref(null)
+const greetResult = ref(null)
+// 存储输入的姓名（用于接口3）
+const userName = ref('')
+
+// 处理接口1调用
+const handleTestHello = async () => {
+  try {
+    const res = await testHello()
+    helloResult.value = res // 展示结果（拦截器已处理，res 直接是后端返回的 data）
+    console.log('接口1调用成功：', res)
+  } catch (err) {
+    console.error('接口1调用失败：', err)
   }
-};
+}
+
+// 处理接口2调用
+const handleTestCreateUser = async () => {
+  try {
+    // 准备测试数据
+    const data = { name: '前端测试用户', age: 25 }
+    const res = await testCreateUser(data)
+    userResult.value = res
+    console.log('接口2调用成功：', res)
+  } catch (err) {
+    console.error('接口2调用失败：', err)
+  }
+}
+
+// 处理接口3调用
+const handleTestGreet = async () => {
+  try {
+    const res = await testGreet(userName.value) // 传入输入的姓名（可为空）
+    greetResult.value = res
+    console.log('接口3调用成功：', res)
+  } catch (err) {
+    console.error('接口3调用失败：', err)
+  }
+}
 </script>
 
 <style scoped>
-.test-backend { padding: 20px; }
-.test-item { margin: 20px 0; }
-button { margin: 5px; }
+.test-page {
+  padding: 20px;
+}
+
+.test-item {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+button {
+  padding: 8px 16px;
+  background: #42b983;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+button:hover {
+  background: #359e75;
+}
+
+.name-input {
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.result-box {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+pre {
+  white-space: pre-wrap; /* 自动换行 */
+  word-wrap: break-word;
+  color: #333;
+}
 </style>
