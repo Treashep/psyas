@@ -1,0 +1,44 @@
+name: Build Status
+
+on:
+  - push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # 新增：启动MySQL服务供测试使用
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: test-secret-key-for-github-actions  # 与下方密码保持一致
+          MYSQL_DATABASE: test_db  # 测试用数据库名
+        ports:
+          - 3306:3306  # GitHub环境端口无需修改，与本地3307不冲突
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # 关键修改：将数据库连接改为MySQL
+      DATABASE_URL: "mysql+pymysql://root:test-secret-key-for-github-actions@localhost:3306/test_db"
+      FLASK_APP: "psyas/app.py"
+      SECRET_KEY: "test-secret-key-for-github-actions"
+      SEND_FILE_MAX_AGE_DEFAULT: 3600
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/dev.txt  # 确保dev.txt已包含pymysql
+      - name: Run Python lints
+        run: flask lint --check
+      - name: Run Python tests
+        run: flask test
