@@ -27,7 +27,8 @@ def create_app(config_object="psyas.settings"):
         static_url_path="",
     )
     app.config.from_object(config_object)
-    app.static_folder = os.path.join(app.root_path, "static", "dist")
+    # 设置前端打包目录为 front/dist
+    app.static_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'front', 'dist'))
 
     # 先注册扩展，保证扩展初始化顺序正确
     register_extensions(app)
@@ -119,8 +120,9 @@ def configure_logger(app):
 
 
 def register_frontend_routes(app):
-    """新增：注册前端页面路由（生产环境）和测试 API."""  # 修复：末尾添加句号
-    static_dist = os.path.join(app.root_path, "static", "dist")
+    """新增：注册前端页面路由（生产环境）和测试 API."""
+    # 设置前端打包目录为 front/dist
+    static_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'front', 'dist'))
 
     # 测试 API 接口
     @app.route("/api/hello")
@@ -131,10 +133,8 @@ def register_frontend_routes(app):
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def frontend_index(path):
-        # 关键：如果是 API 路径，不转发给前端（让后端正常处理）
         if not path.startswith("api/"):
             return send_from_directory(static_dist, "index.html")
-            # API 请求由蓝图处理
         return jsonify({"error": "API 路径错误"}), 404
 
 
