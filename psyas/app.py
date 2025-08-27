@@ -5,10 +5,10 @@ import os
 import sys
 
 from flask import Flask, jsonify, send_from_directory
-from flask_cors import CORS  # 新增：导入 CORS 处理跨域
+from flask_cors import CORS
 
 from psyas import commands, public, user
-from psyas.extensions import (  # 移除了未使用的csrf_protect
+from psyas.extensions import (
     bcrypt,
     cache,
     db,
@@ -17,6 +17,9 @@ from psyas.extensions import (  # 移除了未使用的csrf_protect
     login_manager,
     migrate,
 )
+
+# 新增：导入模型文件，确保Alembic能扫描到
+from psyas.models import analysis, conversation, guide_question
 
 
 def create_app(config_object="psyas.settings"):
@@ -38,8 +41,8 @@ def create_app(config_object="psyas.settings"):
         # 允许前端 http://localhost:8080 跨域访问所有路径（实际可根据需求缩小范围）
         CORS(
             app,
-            origins="http://localhost:8080",  # 明确前端运行地址
-            supports_credentials=True,  # 允许携带 cookie
+            origins="http://localhost:8080",
+            supports_credentials=True,
             methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             allow_headers=["Content-Type", "Authorization"],
         )
@@ -60,13 +63,11 @@ def create_app(config_object="psyas.settings"):
     return app
 
 
-# 以下函数保持不变，无需修改
 def register_extensions(app):
     """Register Flask extensions."""
     bcrypt.init_app(app)
     cache.init_app(app)
     db.init_app(app)
-    # csrf_protect.init_app(app)  # 前后端分离场景暂不启用 CSRF
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
@@ -100,7 +101,13 @@ def register_shellcontext(app):
     """Register shell context objects."""
 
     def shell_context():
-        return {"db": db, "User": user.models.User}
+        return {
+            "db": db,
+            "User": user.models.User,
+            "Conversation": conversation.Conversation,  # 让模型在shell中可用
+            "Analysis": analysis.Analysis,  # 按需调整
+            "GuideQuestion": guide_question.GuideQuestion,  # 按需调整
+        }
 
     app.shell_context_processor(shell_context)
 
@@ -119,7 +126,7 @@ def configure_logger(app):
 
 
 def register_frontend_routes(app):
-    """新增：注册前端页面路由（生产环境）和测试 API."""  # 修复：末尾添加句号
+    """新增：注册前端页面路由（生产环境）和测试 API."""
     static_dist = os.path.join(app.root_path, "static", "dist")
 
     # 测试 API 接口
@@ -134,7 +141,6 @@ def register_frontend_routes(app):
         # 关键：如果是 API 路径，不转发给前端（让后端正常处理）
         if not path.startswith("api/"):
             return send_from_directory(static_dist, "index.html")
-            # API 请求由蓝图处理
         return jsonify({"error": "API 路径错误"}), 404
 
 

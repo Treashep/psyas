@@ -57,7 +57,7 @@ class User(UserMixin, PkModel):
 
     @property
     def full_name(self):
-        """Full user name."""
+        """Full username."""
         return f"{self.first_name} {self.last_name}"
 
     def __repr__(self):
