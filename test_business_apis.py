@@ -31,8 +31,8 @@ def test_conversation_status():
         print(f"响应内容: {json.dumps(response.json(), indent=2, ensure_ascii=False)}")
 
         return response.status_code == 200
-    except Exception as e:
-        print(f"测试失败: {str(e)}")
+    except (requests.RequestException, json.JSONDecodeError, KeyError) as exc:
+        print(f"测试失败: {str(exc)}")
         return False
 
 
@@ -49,8 +49,8 @@ def test_analysis_status():
         print(f"响应内容: {json.dumps(response.json(), indent=2, ensure_ascii=False)}")
 
         return response.status_code == 200
-    except Exception as e:
-        print(f"测试失败: {str(e)}")
+    except (requests.RequestException, json.JSONDecodeError, KeyError) as exc:
+        print(f"测试失败: {str(exc)}")
         return False
 
 
@@ -74,8 +74,8 @@ def test_chat_api():
         if response.status_code == 200:
             return response.json().get("data", {}).get("conversation_id")
         return None
-    except Exception as e:
-        print(f"测试失败: {str(e)}")
+    except (requests.RequestException, json.JSONDecodeError, KeyError) as exc:
+        print(f"测试失败: {str(exc)}")
         return None
 
 
@@ -101,8 +101,8 @@ def test_analysis_api(conversation_id=None):
         if response.status_code == 200:
             return response.json().get("data", {}).get("analysis_id")
         return None
-    except Exception as e:
-        print(f"测试失败: {str(e)}")
+    except (requests.RequestException, json.JSONDecodeError, KeyError) as exc:
+        print(f"测试失败: {str(exc)}")
         return None
 
 
@@ -119,8 +119,8 @@ def test_conversation_history():
         print(f"响应内容: {json.dumps(response.json(), indent=2, ensure_ascii=False)}")
 
         return response.status_code == 200
-    except Exception as e:
-        print(f"测试失败: {str(e)}")
+    except (requests.RequestException, json.JSONDecodeError, KeyError) as exc:
+        print(f"测试失败: {str(exc)}")
         return False
 
 
@@ -137,8 +137,8 @@ def test_analysis_results():
         print(f"响应内容: {json.dumps(response.json(), indent=2, ensure_ascii=False)}")
 
         return response.status_code == 200
-    except Exception as e:
-        print(f"测试失败: {str(e)}")
+    except (requests.RequestException, json.JSONDecodeError, KeyError) as exc:
+        print(f"测试失败: {str(exc)}")
         return False
 
 
@@ -155,8 +155,8 @@ def test_analysis_summary():
         print(f"响应内容: {json.dumps(response.json(), indent=2, ensure_ascii=False)}")
 
         return response.status_code == 200
-    except Exception as e:
-        print(f"测试失败: {str(e)}")
+    except (requests.RequestException, json.JSONDecodeError, KeyError) as exc:
+        print(f"测试失败: {str(exc)}")
         return False
 
 
