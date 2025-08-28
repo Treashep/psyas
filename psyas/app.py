@@ -28,7 +28,9 @@ def create_app(config_object="psyas.settings"):
     )
     app.config.from_object(config_object)
     # 设置前端打包目录为 front/dist
-    app.static_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'front', 'dist'))
+    app.static_folder = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "front", "dist")
+    )
 
     # 先注册扩展，保证扩展初始化顺序正确
     register_extensions(app)
@@ -122,7 +124,9 @@ def configure_logger(app):
 def register_frontend_routes(app):
     """新增：注册前端页面路由（生产环境）和测试 API."""
     # 设置前端打包目录为 front/dist
-    static_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'front', 'dist'))
+    static_dist = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "front", "dist")
+    )
 
     # 测试 API 接口
     @app.route("/api/hello")
