@@ -55,10 +55,14 @@ def create_app(config_object="psyas.settings"):
     configure_logger(app)
     register_frontend_routes(app)
 
-    # 注册测试接口蓝图
+    # 注册业务接口蓝图
     from psyas.routes.test_routes import test_bp
+    from psyas.routes.analysis_routes import analysis_bp
+    from psyas.routes.conversation_routes import conversation_bp
 
     app.register_blueprint(test_bp)
+    app.register_blueprint(analysis_bp)
+    app.register_blueprint(conversation_bp)
 
     return app
 
