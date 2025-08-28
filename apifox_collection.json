@@ -1,0 +1,151 @@
+{
+  "info": {
+    "name": "psyas 心理分析助手 API",
+    "description": "psyas 项目的业务接口集合，包含对话服务和分析服务",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "description": "API 基础地址"
+    },
+    {
+      "key": "testUserId",
+      "value": "1",
+      "description": "测试用户ID"
+    }
+  ],
+  "item": [
+    {
+      "name": "对话服务",
+      "item": [
+        {
+          "name": "对话接口",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/conversation/chat",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": {{testUserId}},\n  \"message\": \"我最近感觉很焦虑，工作压力很大\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取对话历史",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/conversation/history/{{testUserId}}",
+            "query": [
+              {
+                "key": "limit",
+                "value": "10",
+                "description": "返回数量限制"
+              }
+            ]
+          },
+          "response": []
+        },
+        {
+          "name": "对话服务状态",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/conversation/status"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "分析服务",
+      "item": [
+        {
+          "name": "分析对话",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/analysis/analyze",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": {{testUserId}}\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取分析结果列表",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/analysis/results/{{testUserId}}",
+            "query": [
+              {
+                "key": "limit",
+                "value": "10",
+                "description": "返回数量限制"
+              }
+            ]
+          },
+          "response": []
+        },
+        {
+          "name": "获取分析详情",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/analysis/detail/{{testUserId}}/1",
+            "description": "需要先有分析记录才能测试"
+          },
+          "response": []
+        },
+        {
+          "name": "获取分析摘要",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/analysis/summary/{{testUserId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "分析服务状态",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/analysis/status"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "测试接口",
+      "item": [
+        {
+          "name": "Hello测试",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/test/hello"
+          },
+          "response": []
+        },
+        {
+          "name": "API测试",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/hello"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
