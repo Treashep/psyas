@@ -1,0 +1,94 @@
+# -*- coding: utf-8 -*-
+"""聊天助手相关接口路由."""
+from flask import Blueprint, request, jsonify
+from psyas.services.conversation_service import ConversationService
+from psyas.services.analysis_service import AnalysisService
+from psyas.user.models import User
+from psyas.models.analysis import Analysis
+
+chat_bp = Blueprint('chat', __name__, url_prefix='/api/chat')
+
+@chat_bp.route('/send-message', methods=['POST'])
+def send_message():
+    """
+        用户发送消息接口（核心）
+        请求体：{ "user_id": 1, "user_input": "我最近和家里人相处不太好，很烦躁" }
+        返回：{ "assistant_response": "能说说最近一次和家里人发生不愉快是因为什么事情吗？", "conversation_id": 123 }
+    """
+    # 1. 获取请求参数（基础版不做复杂校验，后续加request validation）
+    data = request.get_json()
+    user_id = data.get("user_id")
+    user_input = data.get("user_input")
+    # 2. 简单校验（用户存在 + 输入不为空）
+    if not user_input or not user_id:
+        return jsonify({"code":400,"msg":"用户ID和输入内容不能为空"}),400
+    # 检查用户是否存在（从原有User模型查询）
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"code":404,"msg":"用户不存在"}),404
+    # 3. 调用对话服务，生成回复并存储对话
+    try:
+        result=ConversationService.create_conversation(user_id, user_input)
+        return jsonify({"code":200,
+                        "msg":"对话成功",
+                        "data":result}),200
+    except Exception as e:
+        return jsonify({"code":500,"msg":f"服务器错误{str(e)}"}),500
+
+@chat_bp.route('/get-analysis/<int:user_id>', methods=['GET'])
+def get_analysis(user_id):
+    """
+        获取用户的分析结果接口
+        路径参数：user_id（用户ID）
+        返回：{ "analyses": [{"core_issue": "家庭关系困扰", "emotion_tag": "烦躁", ...}] }
+    """
+    # 1. 校验用户是否存在
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"code":404,"msg":"用户不存在"}),404
+    # 2. 查询该用户的所有分析结果（按时间倒序，最新的在前）
+    analyses = Analysis.query.filter_by(user_id=user_id).order_by(Analysis.analyzed_at.desc()).all()
+    analyses_list = [
+        {
+            "analysis_id": analysis.id,
+            "core_issue": analysis.core_issue,
+            "emotion": analysis.emotion,
+            "simple_conclusion": analysis.simple_conclusion,
+            "analyzed_at": analysis.analyzed_at.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        for analysis in analyses
+    ]
+    return jsonify({
+        "code":200,
+        "msg":"获取分析成功",
+        "data":analyses_list
+    }),200
+
+@chat_bp.route('/create-analysis', methods=['POST'])
+def create_analysis():
+    """
+       触发分析接口（基于某条对话生成分析结果）
+       请求体：{ "user_id": 1, "conversation_id": 123 }
+       返回：{ "analysis": {"core_issue": "家庭关系困扰", ...} }
+    """
+    data = request.get_json()
+    user_id = data.get("user_id")
+    conversation_id = data.get("conversation_id")
+    if not user_id or not conversation_id:
+        return jsonify({"code":400,"msg":"用户ID和对话ID不能为空"}),400
+
+    try:
+        analysis = AnalysisService.create_simple_analysis(user_id, conversation_id)
+        return jsonify({
+            "code": 200,
+            "msg": "分析成功",
+            "data": {
+                "analysis_id": analysis.id,
+                "core_issue": analysis.core_issue,
+                "emotion": analysis.emotion,
+                "simple_conclusion": analysis.simple_conclusion
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({"code": 500, "msg": f"分析失败：{str(e)}"}), 500
+
