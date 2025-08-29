@@ -10,6 +10,15 @@ from psyas.models.conversation import Conversation
 from psyas.models.guide_question import GuideQuestion
 from psyas.user.models import User
 
+# 尝试导入知识库服务，如果导入失败则使用基础模式
+try:
+    from psyas.services.knowledge_service import KnowledgeService
+
+    KNOWLEDGE_SERVICE_AVAILABLE = True
+except ImportError:
+    KNOWLEDGE_SERVICE_AVAILABLE = False
+    print("警告：知识库服务不可用，将使用基础模式")
+
 
 class ConversationService:
     """对话服务类，负责处理用户输入和生成引导回复."""
@@ -23,6 +32,17 @@ class ConversationService:
             "压力": ["压力", "负担", "疲惫", "累", "忙碌", "疲劳"],
             "快乐": ["开心", "高兴", "快乐", "兴奋", "满意", "幸福"],
         }
+
+        # 初始化知识库服务（如果可用）
+        if KNOWLEDGE_SERVICE_AVAILABLE:
+            try:
+                self.knowledge_service = KnowledgeService()
+                print("✅ 知识库服务已启用")
+            except (ImportError, AttributeError) as e:
+                self.knowledge_service = None
+                print(f"⚠️ 知识库服务初始化失败: {e}")
+        else:
+            self.knowledge_service = None
 
     def process_user_input(self, user_id: int, user_input: str) -> Dict:
         """
@@ -84,13 +104,34 @@ class ConversationService:
         # 1. 检测情绪关键词
         detected_emotion = self._detect_emotion(user_input)
 
-        # 2. 根据情绪生成基础回复
+        # 2. 尝试使用知识库服务增强回复
+        if self.knowledge_service:
+            try:
+                knowledge_match = self.knowledge_service.analyze_user_input(
+                    user_input, detected_emotion
+                )
+
+                if knowledge_match and knowledge_match.confidence > 0.3:
+                    # 使用知识库增强的回复
+                    enhanced_response = knowledge_match.immediate_response
+
+                    # 添加后续引导问题
+                    if knowledge_match.follow_up_questions:
+                        follow_up = knowledge_match.follow_up_questions[0]
+                        enhanced_response += f" {follow_up}"
+
+                    return enhanced_response
+
+            except (ImportError, AttributeError, RuntimeError) as e:
+                print(f"知识库服务调用失败，使用基础模式: {e}")
+
+        # 3. 基础模式：根据情绪生成基础回复
         if detected_emotion:
             base_response = self._get_emotion_response(detected_emotion)
         else:
             base_response = "我理解你想要分享的内容。"
 
-        # 3. 添加引导问题
+        # 4. 添加引导问题
         guide_question = self._get_guide_question(detected_emotion or "通用")
 
         return f"{base_response} {guide_question}"

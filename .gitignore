@@ -63,3 +63,9 @@ migrations/
 
 .idea/
 psyas/static/dist/
+# 忽略特定文件
+TECH_UPGRADE_ROADMAP.md
+check_style_fixes.py
+
+# 忽略 docs 目录及其中所有内容
+docs/
