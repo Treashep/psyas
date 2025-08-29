@@ -1,0 +1,159 @@
+{
+  "CBT": {
+    "name": "认知行为疗法",
+    "description": "通过识别和改变负面思维模式来改善情绪和行为",
+    "core_concepts": [
+      "自动思维",
+      "认知偏差", 
+      "行为实验",
+      "思维记录"
+    ],
+    "applicable_emotions": [
+      "焦虑",
+      "抑郁",
+      "愤怒"
+    ],
+    "applicable_issues": [
+      "工作压力",
+      "学习问题",
+      "自我认知"
+    ],
+    "intervention_techniques": [
+      {
+        "name": "思维挑战",
+        "description": "质疑负面思维的合理性",
+        "example": "这个想法有什么证据支持吗？有没有其他可能的解释？",
+        "applicable_when": ["焦虑", "抑郁"]
+      },
+      {
+        "name": "行为激活",
+        "description": "通过增加积极活动来改善情绪",
+        "example": "我们可以尝试制定一些小的、可实现的目标",
+        "applicable_when": ["抑郁", "压力"]
+      }
+    ],
+    "response_templates": [
+      "我注意到你提到了{negative_thought}，我们可以一起来看看这个想法是否合理...",
+      "听起来你陷入了一些负面思维，这是很常见的。让我们试着用不同的角度来看这个问题...",
+      "你提到的{situation}确实具有挑战性。从认知行为的角度，我们可以尝试..."
+    ]
+  },
+
+  "正念疗法": {
+    "name": "正念认知疗法", 
+    "description": "通过正念练习来觉察并接纳当下的情绪和想法",
+    "core_concepts": [
+      "当下觉察",
+      "非评判性观察",
+      "接纳",
+      "情绪调节"
+    ],
+    "applicable_emotions": [
+      "焦虑",
+      "压力",
+      "愤怒"
+    ],
+    "applicable_issues": [
+      "工作压力",
+      "人际关系",
+      "情感关系"
+    ],
+    "intervention_techniques": [
+      {
+        "name": "呼吸觉察",
+        "description": "关注呼吸来锚定注意力",
+        "example": "让我们花一分钟关注一下呼吸，感受空气进出身体的感觉",
+        "applicable_when": ["焦虑", "压力"]
+      },
+      {
+        "name": "情绪标记",
+        "description": "识别并命名当前的情绪",
+        "example": "现在你感受到的这种情绪，我们可以给它一个名字吗？",
+        "applicable_when": ["愤怒", "焦虑"]
+      }
+    ],
+    "response_templates": [
+      "我感受到你现在的{emotion}。让我们先暂停一下，觉察当下的感受...",
+      "这种{emotion}是很正常的人类体验。我们可以试着用正念的方式来对待它...",
+      "听起来你的思绪比较忙碌。我们可以尝试一些简单的正念练习..."
+    ]
+  },
+
+  "人际关系疗法": {
+    "name": "人际关系疗法",
+    "description": "专注于改善人际关系来缓解心理困扰",
+    "core_concepts": [
+      "沟通模式",
+      "人际冲突",
+      "角色转换", 
+      "社会支持"
+    ],
+    "applicable_emotions": [
+      "孤独",
+      "愤怒",
+      "抑郁"
+    ],
+    "applicable_issues": [
+      "人际关系",
+      "家庭关系",
+      "情感关系"
+    ],
+    "intervention_techniques": [
+      {
+        "name": "沟通技巧训练",
+        "description": "学习更有效的表达和倾听方式",
+        "example": "我们可以练习用'我'语句来表达感受，比如'我感到...'而不是'你总是...'",
+        "applicable_when": ["愤怒", "人际关系"]
+      },
+      {
+        "name": "情感表达",
+        "description": "学会适当地表达内心感受",
+        "example": "在这种情况下，你最想对对方说什么？我们可以想想如何更好地表达",
+        "applicable_when": ["孤独", "情感关系"]
+      }
+    ],
+    "response_templates": [
+      "人际关系确实复杂，你在{relationship_context}中遇到的困难很多人都会有...",
+      "听起来这段关系对你很重要。我们来看看有什么方式可以改善沟通...",
+      "在人际交往中感到{emotion}是正常的。让我们探讨一些应对策略..."
+    ]
+  },
+
+  "积极心理学": {
+    "name": "积极心理学",
+    "description": "专注于培养积极情绪和个人优势",
+    "core_concepts": [
+      "优势识别",
+      "感恩练习",
+      "积极情绪",
+      "意义寻找"
+    ],
+    "applicable_emotions": [
+      "快乐",
+      "中性"
+    ],
+    "applicable_issues": [
+      "自我认知",
+      "日常分享"
+    ],
+    "intervention_techniques": [
+      {
+        "name": "优势发现",
+        "description": "帮助识别和运用个人优势",
+        "example": "在这种情况下，你展现了什么样的优势？",
+        "applicable_when": ["快乐", "自我认知"]
+      },
+      {
+        "name": "感恩练习",
+        "description": "培养感恩的心态",
+        "example": "今天有什么让你感到感恩的事情吗？",
+        "applicable_when": ["快乐", "中性"]
+      }
+    ],
+    "response_templates": [
+      "很高兴听到你的{positive_experience}！这说明了你的{strength}...",
+      "你提到的{achievement}真的很棒。你是如何做到的？",
+      "从你的分享中，我看到了你的{positive_quality}..."
+    ]
+  }
+}
