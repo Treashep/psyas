@@ -5,10 +5,10 @@ import os
 import sys
 
 from flask import Flask, jsonify, send_from_directory
-from flask_cors import CORS
+from flask_cors import CORS  # 新增：导入 CORS 处理跨域
 
 from psyas import commands, public, user
-from psyas.extensions import (
+from psyas.extensions import (  # 移除了未使用的csrf_protect
     bcrypt,
     cache,
     db,
@@ -30,7 +30,10 @@ def create_app(config_object="psyas.settings"):
         static_url_path="",
     )
     app.config.from_object(config_object)
-    app.static_folder = os.path.join(app.root_path, "static", "dist")
+    # 设置前端打包目录为 front/dist
+    app.static_folder = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "front", "dist")
+    )
 
     # 先注册扩展，保证扩展初始化顺序正确
     register_extensions(app)
@@ -41,8 +44,8 @@ def create_app(config_object="psyas.settings"):
         # 允许前端 http://localhost:8080 跨域访问所有路径（实际可根据需求缩小范围）
         CORS(
             app,
-            origins="http://localhost:8080",
-            supports_credentials=True,
+            origins="http://localhost:8080",  # 明确前端运行地址
+            supports_credentials=True,  # 允许携带 cookie
             methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             allow_headers=["Content-Type", "Authorization"],
         )
@@ -67,11 +70,13 @@ def create_app(config_object="psyas.settings"):
     return app
 
 
+# 以下函数保持不变，无需修改
 def register_extensions(app):
     """Register Flask extensions."""
     bcrypt.init_app(app)
     cache.init_app(app)
     db.init_app(app)
+    # csrf_protect.init_app(app)  # 前后端分离场景暂不启用 CSRF
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
@@ -131,7 +136,10 @@ def configure_logger(app):
 
 def register_frontend_routes(app):
     """新增：注册前端页面路由（生产环境）和测试 API."""
-    static_dist = os.path.join(app.root_path, "static", "dist")
+    # 设置前端打包目录为 front/dist
+    static_dist = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "front", "dist")
+    )
 
     # 测试 API 接口
     @app.route("/api/hello")
