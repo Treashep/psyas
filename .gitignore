@@ -69,3 +69,6 @@ check_style_fixes.py
 
 # 忽略 docs 目录及其中所有内容
 docs/
+test_mcp_integration.py
+test_agent_upgrade.py
+test_mcp_simple.py
