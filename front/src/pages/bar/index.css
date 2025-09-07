@@ -1,0 +1,23 @@
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #d9faff;
+  color: #414b4d;
+  padding: 1rem 2rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 100vw;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #5c5c5c;
+}
+
+.logo a {
+  color: #518b96;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
