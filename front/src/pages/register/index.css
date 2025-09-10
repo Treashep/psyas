@@ -1,0 +1,36 @@
+.body {
+  display: flex;
+  flex-direction: row;
+  min-height: calc(100vh - 60px); /* 保持与导航栏一致 */
+  padding: 2rem; /* 只保留一个 padding */
+  background-color: #eefbfc;
+  box-sizing: border-box;
+}
+.left {
+  display: flex;
+  flex-direction: column; /* 让子元素按列排列 */
+  align-items: center; /* 水平居中 */
+  margin-top: 50px;
+  width: 60%;
+  background-color: #eefbfc;
+  margin-left: -17px;
+  min-height: calc(100vh - 60px - 4rem);
+}
+
+.left p {
+  margin-top: 30px;
+  padding-bottom: 10px;
+  text-align: center;
+  display: block;
+  color: #444444;
+}
+.right {
+  display: flex;
+  flex-grow: 1;
+  margin-top: 15px;
+  min-height: calc(100vh - 60px);
+  padding: 3rem;
+  background-color: #ffc661;
+  box-sizing: border-box;
+  overflow: auto;
+}

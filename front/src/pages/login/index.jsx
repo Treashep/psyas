@@ -1,4 +1,4 @@
-import Bar from "../bar"
+import Bar from "../../components/bar"
 import '/src/pages/login/index.css';
 const Login = ()=>{
   return (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '/src/pages/bar/index.css';
+import '/src/components/bar/index.css';
 
 function Bar() {
   return (
