@@ -1,48 +1,27 @@
 import React from "react";
+import Bar from "../../components/bar";
+import './index.css';
 
 const Talk = () => {
   return (
-    <div style={{ 
-      width: '100vw',
-      height: '100vh',
-      display: 'flex',
-      margin: 0, 
-      background: '#fff',
-      boxShadow: 'none'
-    }}>
+    <div className="body">
+      <Bar />
       {/* 左侧历史对话栏 */}
-      <div style={{ 
-        width: '240px', 
-        borderRight: '1px solid #eee',
-        padding: '20px',
-        background: '#fafafa'
-      }}>
-        <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px' }}>历史对话</div>
+      <div className="history-box">
+        <div className="history-title">历史对话</div>
         {/* 渲染历史对话列表 */}
-        <div style={{ color: '#666', fontSize: '14px' }}>暂无历史对话</div>
+        <div className="history-empty">暂无历史对话</div>
       </div>
 
       {/* 右侧内容区域 */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div className="right-content">
         {/* 对话内容区域 */}
-        <div style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
-          <div style={{
-            width: '72vw',
-            margin: '0 auto',
-            padding: '24px',
-            background: '#fff',
-            borderRadius: '8px'
-          }}>
-            <div style={{ fontSize: '18px', marginBottom: '20px' }}>
+        <div className="chat-area">
+          <div className="chat-window">
+            <div className="chat-title">
               如你需要，我还可以为你设计：
             </div>
-            <div style={{ 
-              listStyle: 'disc',
-              paddingLeft: '24px',
-              fontSize: '16px',
-              lineHeight: '2',
-              color: '#686868ff'
-            }}>
+            <div className="chat-text">
               <p>
                 心理分析最初由西格蒙德·弗洛伊德创立，是一种深入探索人类潜意识、情感冲突与人格结构的心理学方法。它认为，许多我们表面无法理解的情绪、行为与人际关系模式，其实源于童年经历、未被觉察的欲望、压抑的情感与内在冲突。
               </p>
@@ -63,39 +42,13 @@ const Talk = () => {
         </div>
 
         {/* 底部输入框 */}
-        <div style={{
-          borderTop: '1px solid #eee',
-          width: '72vw',
-          padding: '16px 30px',
-          background: '#fff',
-          display: 'flex',
-          gap: '12px',
-          position: 'fixed',
-          bottom: 0,
-          right: '20px'
-        }}>
+        <div className="input-area">
           <input 
             type="text"
             placeholder="请输入您的问题..."
-            style={{
-              flex: 1,
-              padding: '12px 16px',
-              backgroundColor: '#ddd', 
-              border: '1px solid #ddd',
-              borderRadius: '6px',
-              fontSize: '16px',
-              outline: 'none'
-            }}
+            className="input-box"
           />
-          <button style={{
-            padding: '0 24px',
-            background: '#1b62b2',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: '16px'
-          }}>
+          <button className="send-btn">
             发送
           </button>
         </div>
