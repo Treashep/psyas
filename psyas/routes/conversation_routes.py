@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """对话相关的API路由."""
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from psyas.services.conversation_service import ConversationService
+from psyas.user.models import User
 
 # 创建对话蓝图
 conversation_bp = Blueprint("conversation", __name__, url_prefix="/api/conversation")
@@ -12,14 +14,14 @@ conversation_service = ConversationService()
 
 
 @conversation_bp.route("/chat", methods=["POST"])
+@jwt_required()
 def chat():
     """
     用户对话接口 - 接收用户输入，返回助手回复.
 
     请求格式:
     {
-        "user_id": 1,
-        "message": "我最近感觉很焦虑"
+        "message": "我最近感觉很焦虑"  // 不再需要user_id，从 JWT 获取
     }
 
     返回格式:
@@ -35,23 +37,25 @@ def chat():
     }
     """
     try:
-        # 1. 获取请求数据
+        # 1. 从 JWT 获取用户ID
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        if not user:
+            return jsonify({"code": 401, "message": "用户不存在"}), 401
+
+        # 2. 获取请求数据
         data = request.get_json()
         if not data:
             return jsonify({"code": 400, "message": "请提供JSON数据"}), 400
 
-        # 2. 验证必需字段
-        user_id = data.get("user_id")
+        # 3. 验证必需字段
         message = data.get("message")
-
-        if not user_id:
-            return jsonify({"code": 400, "message": "缺少user_id字段"}), 400
         if not message or not message.strip():
             return jsonify({"code": 400, "message": "消息内容不能为空"}), 400
 
-        # 3. 调用对话服务处理
+        # 4. 调用对话服务处理
         result = conversation_service.process_user_input(
-            user_id=int(user_id), user_input=message.strip()
+            user_id=current_user_id, user_input=message.strip()
         )
 
         # 4. 返回结果
@@ -66,14 +70,14 @@ def chat():
         return jsonify({"code": 500, "message": f"服务不可用: {str(exc)}"}), 500
 
 
-@conversation_bp.route("/history/<int:user_id>", methods=["GET"])
-def get_conversation_history(user_id):
+@conversation_bp.route("/history", methods=["GET"])
+@jwt_required()
+def get_conversation_history():
     """
     获取用户对话历史接口.
 
     URL参数:
-    - user_id: 用户ID (路径参数)
-    - limit: 返回数量限制 (查询参数，默认10)
+    - limit: 返回数量限制 (查询参数，默认10) // 不再需要user_id路径参数
 
     返回格式:
     {
@@ -94,16 +98,22 @@ def get_conversation_history(user_id):
     }
     """
     try:
-        # 1. 获取查询参数
+        # 1. 从 JWT 获取用户ID
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        if not user:
+            return jsonify({"code": 401, "message": "用户不存在"}), 401
+
+        # 2. 获取查询参数
         limit = request.args.get("limit", default=10, type=int)
 
-        # 2. 验证参数
+        # 3. 验证参数
         if limit <= 0 or limit > 100:
             return jsonify({"code": 400, "message": "limit参数必须在1-100之间"}), 400
 
-        # 3. 调用服务获取对话历史
+        # 4. 调用服务获取对话历史
         result = conversation_service.get_user_conversations(
-            user_id=user_id, limit=limit
+            user_id=current_user_id, limit=limit
         )
 
         # 4. 返回结果
@@ -146,7 +156,7 @@ def conversation_status():
                         "timestamp": datetime.now().isoformat(),
                         "endpoints": [
                             "/api/conversation/chat",
-                            "/api/conversation/history/<user_id>",
+                            "/api/conversation/history",  # 更新路径
                             "/api/conversation/status",
                         ],
                     },
