@@ -6,6 +6,8 @@ Most configuration is set via environment variables.
 For local development, use a .env file to set
 environment variables.
 """
+from datetime import timedelta
+
 from environs import Env
 
 env = Env()
@@ -31,7 +33,22 @@ SECRET_KEY = env.str(
 )  # 开发环境默认密钥（生产环境必须通过 .env 设置）
 BCRYPT_LOG_ROUNDS = env.int("BCRYPT_LOG_ROUNDS", default=13)  # 密码加密强度
 
-
+# JWT配置
+JWT_SECRET_KEY = env.str(
+    "JWT_SECRET_KEY", default=SECRET_KEY
+)  # 默认为应用密钥，生产环境建议单独设置
+JWT_ACCESS_TOKEN_EXPIRES = timedelta(
+    hours=env.int("JWT_ACCESS_TOKEN_HOURS", default=1)
+)  # 访问令牌过期时间，默认1小时
+JWT_REFRESH_TOKEN_EXPIRES = timedelta(
+    days=env.int("JWT_REFRESH_TOKEN_DAYS", default=30)
+)  # 刷新令牌过期时间，默认30天
+JWT_BLACKLIST_ENABLED = env.bool(
+    "JWT_BLACKLIST_ENABLED", default=True
+)  # 启用令牌黑名单
+JWT_BLACKLIST_TOKEN_CHECKS = env.list(
+    "JWT_BLACKLIST_TOKEN_CHECKS", default=["access", "refresh"]
+)  # 黑名单检查的令牌类型
 # 4. 静态文件配置
 SEND_FILE_MAX_AGE_DEFAULT = env.int(
     "SEND_FILE_MAX_AGE_DEFAULT", default=300

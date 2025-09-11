@@ -38,3 +38,4 @@ Flask-DebugToolbar==0.16.0
 
 # Environment variable parsing
 environs==14.3.0
+Flask-JWT-Extended==4.6.0
