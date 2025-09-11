@@ -2,6 +2,7 @@
 """User models."""
 import datetime as dt
 
+from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -63,3 +64,32 @@ class User(UserMixin, PkModel):
     def __repr__(self):
         """Represent instance as a unique string."""
         return f"<User({self.username!r})>"
+
+    def generate_tokens(self):
+        """生成JWT tokens."""
+        access_token = create_access_token(
+            identity=self.id,
+            additional_claims={
+                "username": self.username,
+                "email": self.email,
+                "is_admin": self.is_admin,
+            },
+        )
+        refresh_token = create_refresh_token(identity=self.id)
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "expires_in": 3600,  # 1小时
+        }
+
+    @staticmethod
+    def verify_jwt_token(token):
+        """验证JWT token并返回用户."""
+        try:
+            from flask_jwt_extended import decode_token
+
+            decoded = decode_token(token)
+            user_id = decoded["sub"]
+            return User.query.get(user_id)
+        except (ImportError, AttributeError, KeyError, RuntimeError):
+            return None
