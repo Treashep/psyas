@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """分析结果相关的API路由."""
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from psyas.services.analysis_service import AnalysisService
+from psyas.user.models import User
 
 # 创建分析蓝图
 analysis_bp = Blueprint("analysis", __name__, url_prefix="/api/analysis")
@@ -12,13 +14,13 @@ analysis_service = AnalysisService()
 
 
 @analysis_bp.route("/analyze", methods=["POST"])
+@jwt_required()
 def analyze_conversation():
     """
     分析对话接口 - 对用户对话进行心理分析.
 
     请求格式:
     {
-        "user_id": 1,
         "conversation_id": 1  // 可选，如果不提供则分析最新未分析的对话
     }
 
@@ -30,32 +32,34 @@ def analyze_conversation():
             "analysis_id": 1,
             "core_issue": "工作压力",
             "emotion": "焦虑",
-            "conclusion": "当前表现出一定程度的焦虑情绪，工作方面的压力需要合理管理和调节，建议继续深入探讨，寻找更好的应对方式。",
+            "conclusion": "当前表现出一定程度的焦虑情绪...",
             "analyzed_at": "2025-08-28T16:37:00",
             "conversation_id": 1
         }
     }
     """
     try:
-        # 1. 获取请求数据
+        # 1. 从JWT获取用户ID
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        if not user:
+            return jsonify({"code": 401, "message": "用户不存在"}), 401
+
+        # 2. 获取请求数据
         data = request.get_json()
         if not data:
             return jsonify({"code": 400, "message": "请提供JSON数据"}), 400
 
-        # 2. 验证必需字段
-        user_id = data.get("user_id")
+        # 3. 验证字段
         conversation_id = data.get("conversation_id")  # 可选
 
-        if not user_id:
-            return jsonify({"code": 400, "message": "缺少user_id字段"}), 400
-
-        # 3. 调用分析服务
+        # 4. 调用分析服务
         result = analysis_service.analyze_user_conversations(
-            user_id=int(user_id),
+            user_id=current_user_id,
             conversation_id=int(conversation_id) if conversation_id else None,
         )
 
-        # 4. 返回结果
+        # 5. 返回结果
         if "error" in result:
             return jsonify(result), result.get("code", 500)
         else:
@@ -67,48 +71,35 @@ def analyze_conversation():
         return jsonify({"code": 500, "message": f"服务不可用: {str(exc)}"}), 500
 
 
-@analysis_bp.route("/results/<int:user_id>", methods=["GET"])
-def get_analysis_results(user_id):
+@analysis_bp.route("/results", methods=["GET"])
+@jwt_required()
+def get_analysis_results():
     """
     获取用户分析结果列表接口.
 
     URL参数:
-    - user_id: 用户ID (路径参数)
     - limit: 返回数量限制 (查询参数，默认10)
-
-    返回格式:
-    {
-        "code": 200,
-        "message": "获取分析历史成功",
-        "data": {
-            "analyses": [
-                {
-                    "id": 1,
-                    "core_issue": "工作压力",
-                    "emotion": "焦虑",
-                    "conclusion": "当前表现出一定程度的焦虑情绪...",
-                    "analyzed_at": "2025-08-28T16:37:00",
-                    "conversation_id": 1
-                }
-            ],
-            "total": 1
-        }
-    }
     """
     try:
-        # 1. 获取查询参数
+        # 1. 从JWT获取用户ID
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        if not user:
+            return jsonify({"code": 401, "message": "用户不存在"}), 401
+
+        # 2. 获取查询参数
         limit = request.args.get("limit", default=10, type=int)
 
-        # 2. 验证参数
+        # 3. 验证参数
         if limit <= 0 or limit > 100:
             return jsonify({"code": 400, "message": "limit参数必须在1-100之间"}), 400
 
-        # 3. 调用服务获取分析历史
+        # 4. 调用服务获取分析历史
         result = analysis_service.get_user_analysis_history(
-            user_id=user_id, limit=limit
+            user_id=current_user_id, limit=limit
         )
 
-        # 4. 返回结果
+        # 5. 返回结果
         if "error" in result:
             return jsonify(result), result.get("code", 500)
         else:
@@ -118,13 +109,13 @@ def get_analysis_results(user_id):
         return jsonify({"code": 400, "message": f"参数错误: {str(exc)}"}), 400
 
 
-@analysis_bp.route("/detail/<int:user_id>/<int:analysis_id>", methods=["GET"])
-def get_analysis_detail(user_id, analysis_id):
+@analysis_bp.route("/detail/<int:analysis_id>", methods=["GET"])
+@jwt_required()
+def get_analysis_detail(analysis_id):
     """
     获取分析结果详情接口.
 
     URL参数:
-    - user_id: 用户ID (路径参数)
     - analysis_id: 分析结果ID (路径参数)
 
     返回格式:
@@ -144,12 +135,18 @@ def get_analysis_detail(user_id, analysis_id):
     }
     """
     try:
-        # 1. 调用服务获取分析详情
+        # 1. 从JWT获取用户ID
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        if not user:
+            return jsonify({"code": 401, "message": "用户不存在"}), 401
+
+        # 2. 调用服务获取分析详情
         result = analysis_service.get_analysis_by_id(
-            user_id=user_id, analysis_id=analysis_id
+            user_id=current_user_id, analysis_id=analysis_id
         )
 
-        # 2. 返回结果
+        # 3. 返回结果
         if "error" in result:
             return jsonify(result), result.get("code", 500)
         else:
@@ -159,13 +156,11 @@ def get_analysis_detail(user_id, analysis_id):
         return jsonify({"code": 400, "message": f"参数错误: {str(exc)}"}), 400
 
 
-@analysis_bp.route("/summary/<int:user_id>", methods=["GET"])
-def get_analysis_summary(user_id):
+@analysis_bp.route("/summary", methods=["GET"])
+@jwt_required()
+def get_analysis_summary():
     """
     获取用户分析摘要接口 - 统计用户的整体心理状态趋势.
-
-    URL参数:
-    - user_id: 用户ID (路径参数)
 
     返回格式:
     {
@@ -190,8 +185,16 @@ def get_analysis_summary(user_id):
     }
     """
     try:
-        # 1. 获取用户所有分析结果进行统计
-        result = analysis_service.get_user_analysis_history(user_id=user_id, limit=100)
+        # 1. 从JWT获取用户ID
+        current_user_id = get_jwt_identity()
+        user = User.query.get(current_user_id)
+        if not user:
+            return jsonify({"code": 401, "message": "用户不存在"}), 401
+
+        # 2. 获取用户所有分析结果进行统计
+        result = analysis_service.get_user_analysis_history(
+            user_id=current_user_id, limit=100
+        )
 
         if "error" in result:
             return jsonify(result), result.get("code", 500)
@@ -289,9 +292,9 @@ def analysis_status():
                         "timestamp": datetime.now().isoformat(),
                         "endpoints": [
                             "/api/analysis/analyze",
-                            "/api/analysis/results/<user_id>",
-                            "/api/analysis/detail/<user_id>/<analysis_id>",
-                            "/api/analysis/summary/<user_id>",
+                            "/api/analysis/results",
+                            "/api/analysis/detail/<analysis_id>",
+                            "/api/analysis/summary",
                             "/api/analysis/status",
                         ],
                     },
