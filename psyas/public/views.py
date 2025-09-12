@@ -5,7 +5,8 @@ from flask import (
     jsonify,
     request,
 )
-from flask_login import current_user, login_required, login_user, logout_user
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_login import current_user, login_user
 
 from psyas.extensions import login_manager
 from psyas.public.forms import LoginForm
@@ -53,10 +54,11 @@ def api_login():
 
 
 @blueprint.route("/api/logout/", methods=["POST"])
-@login_required
+@jwt_required()
 def api_logout():
-    """新：登出 API（返回 JSON）."""
-    logout_user()
+    """新：登出 API（返回 JSON）使用JWT认证."""
+    # JWT logout通常只需要前端删除token，服务端不需要特别处理
+    # 这里可以添加token黑名单功能如果需要的话
     return jsonify({"status": "success", "message": "Logged out successfully"})
 
 
@@ -88,13 +90,19 @@ def api_register():
 
 
 @blueprint.route("/api/user/", methods=["GET"])
-@login_required
+@jwt_required()
 def api_user_info():
-    """新：获取当前用户信息（示例）."""
+    """新：获取当前用户信息使用JWT认证."""
+    # 从JWT获取用户ID
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({"status": "error", "message": "用户不存在"}), 401
+
     return jsonify(
         {
-            "id": current_user.id,
-            "username": current_user.username,
-            "email": current_user.email,
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
         }
     )

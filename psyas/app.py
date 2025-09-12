@@ -14,12 +14,21 @@ from psyas.extensions import (  # 移除了未使用的csrf_protect
     db,
     debug_toolbar,
     flask_static_digest,
+    jwt,
     login_manager,
     migrate,
 )
 
+# 导入模型类用于shell context
 # 新增：导入模型文件，确保Alembic能扫描到
-from psyas.models import analysis, conversation, guide_question
+from psyas.models import analysis  # noqa: F401
+from psyas.models import conversation  # noqa: F401
+from psyas.models import guide_question  # noqa: F401
+from psyas.models import (
+    Analysis,
+    Conversation,
+    GuideQuestion,
+)
 
 
 def create_app(config_object="psyas.settings"):
@@ -81,6 +90,9 @@ def register_extensions(app):
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
     flask_static_digest.init_app(app)
+    # 条件初始化JWT
+    if jwt is not None:
+        jwt.init_app(app)
     return None
 
 
@@ -88,6 +100,9 @@ def register_blueprints(app):
     """Register Flask blueprints (API 蓝图)."""
     app.register_blueprint(public.views.blueprint)
     app.register_blueprint(user.views.blueprint)
+    from psyas.routes.auth_routes import auth_bp
+
+    app.register_blueprint(auth_bp)
     return None
 
 
@@ -113,9 +128,9 @@ def register_shellcontext(app):
         return {
             "db": db,
             "User": user.models.User,
-            "Conversation": conversation.Conversation,  # 让模型在shell中可用
-            "Analysis": analysis.Analysis,  # 按需调整
-            "GuideQuestion": guide_question.GuideQuestion,  # 按需调整
+            "Conversation": Conversation,  # 使用包级别导入
+            "Analysis": Analysis,  # 使用包级别导入
+            "GuideQuestion": GuideQuestion,  # 使用包级别导入
         }
 
     app.shell_context_processor(shell_context)
