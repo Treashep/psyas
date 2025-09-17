@@ -12,6 +12,35 @@ from psyas.user.models import User
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
 
+@auth_bp.route("/register", methods=["POST"])
+def register():
+    """用户注册接口."""
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+    email = data.get("email")
+    # 验证用户是否已存在
+    if User.query.filter_by(username=username).first():
+        return jsonify({"code": 400, "message": "用户名已存在"}), 400
+    if User.query.filter_by(email=email).first():
+        return jsonify({"code": 400, "message": "邮箱已被注册"}), 400
+    # 创建新用户
+    user = User.create(username=username, password=password, email=email, active=True)
+    return jsonify(
+        {
+            "code": 200,
+            "message": "注册成功",
+            "data": {
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                }
+            },
+        }
+    )
+
+
 @auth_bp.route("/login", methods=["POST"])
 def jwt_login():
     """
