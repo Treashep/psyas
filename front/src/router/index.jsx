@@ -5,11 +5,11 @@ import Register from "../pages/register/index.jsx";
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/talk',
     element: <Talk></Talk>,
   },
   {
-    path: '/login',
+    path: '/',
     element: <Login></Login>,
   },
   {
