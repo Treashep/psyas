@@ -50,10 +50,10 @@ def create_app(config_object="psyas.settings"):
     # ---------- 重点：CORS 跨域配置 ----------
     # 开发环境直接放开跨域（方便调试），生产环境再严格限制
     if app.config.get("ENV") == "development":
-        # 允许前端 http://localhost:8080 跨域访问所有路径（实际可根据需求缩小范围）
+        # 允许前端 http://localhost:5173 跨域访问所有路径（Vite默认端口5173）
         CORS(
             app,
-            origins="http://localhost:8080",  # 明确前端运行地址
+            origins="http://localhost:5173",  # 修正为Vite的默认端口
             supports_credentials=True,  # 允许携带 cookie
             methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             allow_headers=["Content-Type", "Authorization"],
@@ -161,14 +161,16 @@ def register_frontend_routes(app):
     def api_hello():
         return jsonify({"message": "Hello from Flask API!", "status": "success"})
 
-    # 前端页面入口
-    @app.route("/", defaults={"path": ""})
-    @app.route("/<path:path>")
-    def frontend_index(path):
-        # 关键：如果是 API 路径，不转发给前端（让后端正常处理）
-        if not path.startswith("api/"):
+    # 前端 SPA 路由处理（仅在生产环境或前端打包文件存在时使用）
+    # 注意：这个路由的优先级最低，所以放在最后注册
+    @app.route("/spa", defaults={"path": ""})
+    @app.route("/spa/<path:path>")
+    def frontend_spa(path):
+        """处理前端SPA路由（仅用于生产环境的打包文件）."""
+        try:
             return send_from_directory(static_dist, "index.html")
-        return jsonify({"error": "API 路径错误"}), 404
+        except FileNotFoundError:
+            return jsonify({"error": "前端文件未找到，请先构建前端"}), 404
 
 
 if __name__ == "__main__":
