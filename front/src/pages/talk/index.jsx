@@ -18,9 +18,6 @@ const Talk = () => {
         {/* 对话内容区域 */}
         <div className="chat-area">
           <div className="chat-window">
-            <div className="chat-title">
-              如你需要，我还可以为你设计：
-            </div>
             <div className="chat-text">
               <p>
                 心理分析最初由西格蒙德·弗洛伊德创立，是一种深入探索人类潜意识、情感冲突与人格结构的心理学方法。它认为，许多我们表面无法理解的情绪、行为与人际关系模式，其实源于童年经历、未被觉察的欲望、压抑的情感与内在冲突。
