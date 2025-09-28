@@ -1,4 +1,4 @@
-//axios封装处理
+// axios封装处理
 import axios from "axios";
 // 1.根域名配置
 // 2.超时时间
