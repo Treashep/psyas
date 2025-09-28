@@ -22,7 +22,95 @@ def load_user(user_id):
     return User.get_by_id(int(user_id))
 
 
-# ============= 新增 API 路由（供 Vue 前端调用） =============
+# ============= 传统页面路由 =============
+@blueprint.route("/")
+def home():
+    """Homepage - 重定向到前端登录页面."""
+    from flask import redirect
+
+    # 重定向到前端登录页面（Vite开发服务器）
+    return redirect("http://localhost:5173/")
+
+
+@blueprint.route("/login")
+def login_page():
+    """Traditional Flask login page."""
+    from flask import render_template, request
+
+    from psyas.public.forms import LoginForm
+
+    form = LoginForm(request.form)
+
+    # 为前后端分离架构提供兼容的csrf_token函数
+    def csrf_token():
+        return ""
+
+    # 使用专门的登录页面模板，或者使用home.html
+    return render_template("public/home.html", form=form, csrf_token=csrf_token)
+
+
+@blueprint.route("/flask-home")
+def flask_home():
+    """Original Flask homepage for development/testing."""
+    from flask import render_template
+
+    from psyas.public.forms import LoginForm
+
+    form = LoginForm(request.form)
+
+    # 为前后端分离架构提供兼容的csrf_token函数
+    def csrf_token():
+        return ""
+
+    return render_template("public/home.html", form=form, csrf_token=csrf_token)
+
+
+@blueprint.route("/about/")
+def about():
+    """About page."""
+    from flask import render_template
+
+    # 为前后端分离架构提供兼容的csrf_token函数
+    def csrf_token():
+        return ""
+
+    return render_template("public/about.html", csrf_token=csrf_token)
+
+
+@blueprint.route("/register/")
+def register():
+    """Register page."""
+    from flask import render_template
+
+    from psyas.public.forms import LoginForm
+    from psyas.user.forms import RegisterForm
+
+    form = LoginForm(request.form)
+    register_form = RegisterForm(request.form)
+
+    # 为前后端分离架构提供兼容的csrf_token函数
+    def csrf_token():
+        return ""
+
+    return render_template(
+        "public/register.html",
+        form=form,
+        register_form=register_form,
+        csrf_token=csrf_token,
+    )
+
+
+@blueprint.route("/logout/")
+def logout():
+    """Logout."""
+    from flask import redirect, url_for
+    from flask_login import logout_user
+
+    logout_user()
+    return redirect(url_for("public.home"))
+
+
+# ============= 新增 API 路由（供 React 前端调用） =============
 @blueprint.route("/api/login/", methods=["POST"])
 def api_login():
     """新：登录 API（返回 JSON）."""

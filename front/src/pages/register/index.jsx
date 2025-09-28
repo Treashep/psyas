@@ -1,61 +1,50 @@
 import Bar from "../../components/bar"
-import './index.css';
-import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { fetchRegister } from "../../store/modules/user";
+import '/src/pages/login/index.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+const Register = ()=>{
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-const Register = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    confirmPassword: ''
-  });
-  const [rememberPassword, setRememberPassword] = useState(false);
+    //跳转逻辑
+    const handleNavigation = (path) => {
+      navigate(path);
+    };
 
-  // 组件加载时检查localStorage
-  useEffect(() => {
-    const savedData = localStorage.getItem('registerData');
-    if (savedData) {
-      const parsedData = JSON.parse(savedData); //json化账户信息
-      setFormData(parsedData); // 进入页面填充信息
-      setRememberPassword(true); // 自动勾选
-    }
-  }, []);
+    const [form, setForm] = useState({
+      username: '',
+      password: '',
+      email:'',
+      remember: false
+    });
 
-  // 处理输入变化
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+    const handleSubmit = async (e) => {
+      e.preventDefault();
 
-  // 处理记住密码变化
-  const handleRememberChange = (e) => {
-    const isChecked = e.target.checked;
-    setRememberPassword(isChecked);
-    
-    if (isChecked) {
-      localStorage.setItem('registerData', JSON.stringify(formData));
-    }
-  };
-
-  const handleNavigation = (path) => {
-    if (path === '/login' && formData) {
-      // 检查是否有空值
-      if (!formData.username || !formData.password || !formData.confirmPassword) {
-        alert('请填写完整信息！');
-        return;
+      // 保存“记住密码”
+      if (form.remember) {
+        localStorage.setItem('login_remember', JSON.stringify({
+          username: form.username,
+          password: form.password
+        }));
+      } else {
+        localStorage.removeItem('login_remember');
       }
-      // 检查两次密码是否一致
-      if (formData.password !== formData.confirmPassword) {
-        alert('两次输入的密码不一致！');
-        return;
+
+      // 等待注册结果
+      const result = await dispatch(fetchRegister(form));
+
+      if (result.meta.requestStatus === 'fulfilled') {
+        // 注册成功，跳转到登录页
+        alert('注册成功，请登录');
+        navigate('/'); // 跳转到登录页
+      } else {
+        // 注册失败，提示错误
+        alert('注册失败：' + result.payload); // result.payload 是错误信息
       }
-    }
-    navigate(path);
-  };
+    };
 
   return (
     <div className="body">
@@ -74,62 +63,41 @@ const Register = () => {
       <div className="right">
         <div className="register">
           <div className="title">
-            <span onClick={() => handleNavigation('/login')}>登录</span>
+            <span onClick={() => handleNavigation('/')}>登录</span>
             <span className="divider">|</span>
             <span className="active" onClick={() => handleNavigation('/register')}>注册</span>
           </div>
           <div className="form">
             <div className="input-group">
-              <input 
+              <input
+                name="password"
                 type="text" 
                 placeholder="用户名/手机号/邮箱" 
-                autoComplete="new-password"
-                name="username"
-                value={formData.username}
-                onChange={handleInputChange}
+                autoComplete="off"
+                onChange={(e) => setForm({...form, username: e.target.value})}
+                value={form.username}
               />
             </div>
             <div className="input-group">
-              <input 
+              <input
                 type="password" 
                 placeholder="请输入密码" 
-                autoComplete="new-password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="input-group">
-              <input 
-                type="password"
-                autoComplete="new-password"
-                placeholder="请再次输入密码" 
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
+                autoComplete="off"
+                value={form.password}
+                onChange={(e) => setForm({...form, password: e.target.value})}
               />
             </div>
             <div className="remember">
               <label>
-                <input 
-                  type="checkbox"
-                  checked={rememberPassword}
-                  onChange={handleRememberChange}
+                <input
+                  type="checkbox" 
+                  checked={form.remember}
+                  onChange={(e) => setForm({...form, remember: e.target.checked})}
                 />
                 <span>记住密码</span>
               </label>
             </div>
-            <button 
-              className="register-btn" 
-              onClick={() => {
-                if (rememberPassword) {
-                  localStorage.setItem('registerData', JSON.stringify(formData));
-                }
-                handleNavigation('/login')
-              }}
-            >
-              注 册
-            </button>
+            <button className="login-btn" onClick={handleSubmit}>登 录</button>
             <div className="extra-link">
               <a href="#">意见反馈</a>
             </div>
