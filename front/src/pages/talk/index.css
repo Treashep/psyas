@@ -66,6 +66,7 @@ html, body {
   padding: 0 20px;
   background: #fff;
   border-radius: 8px;
+  overflow-y: auto;
 }
 
 .chat-text {
@@ -85,7 +86,7 @@ html, body {
   background: #fff;
   display: flex;
   gap: 12px;
-  border: 2px solid #a3d2ed;
+  border: 2px solid #b3d2e4;
   border-radius: 12px;
   box-shadow: 0 2px 12px #a8d1e8;
 }
