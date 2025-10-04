@@ -1,15 +1,18 @@
+/* /src/pages/register/index.css */
+
 .body {
   display: flex;
   flex-direction: row;
-  min-height: calc(100vh - 60px); /* 保持与导航栏一致 */
-  padding: 2rem; /* 只保留一个 padding */
+  min-height: calc(100vh - 60px);
+  padding: 2rem;
   background-color: #eefbfc;
   box-sizing: border-box;
 }
+
 .left {
   display: flex;
-  flex-direction: column; /* 让子元素按列排列 */
-  align-items: center; /* 水平居中 */
+  flex-direction: column;
+  align-items: center;
   margin-top: 50px;
   width: 60%;
   background-color: #eefbfc;
@@ -21,9 +24,9 @@
   margin-top: 30px;
   padding-bottom: 10px;
   text-align: center;
-  display: block;
   color: #444444;
 }
+
 .right {
   display: flex;
   flex-grow: 1;
@@ -36,6 +39,7 @@
   align-items: center;
 }
 
+/* ✅ 改为 .register，不是 .logregisterin */
 .register {
   width: 400px;
   padding: 30px;
@@ -62,7 +66,8 @@
   font-weight: bold;
 }
 
-.register .title span:hover, .register .title .active {
+.register .title span:hover,
+.register .title .active {
   color: #1b62b2;
 }
 
@@ -72,14 +77,14 @@
 }
 
 .form {
-  width: 85%;  /* 设置表单宽度，比login盒子小一些 */
-  margin: 0 auto;  /* 水平居中 */
+  width: 85%;
+  margin: 0 auto;
 }
 
 .form .input-group {
   margin-bottom: 20px;
   display: flex;
-  justify-content: center;  /* 水平居中 */
+  justify-content: center;
 }
 
 .form input[type="text"],
@@ -137,11 +142,11 @@
   font-size: 14px;
 }
 
-.extra-links a {
+.extra-link a {
   color: #666;
   text-decoration: none;
 }
 
-.extra-links a:hover {
+.extra-link a:hover {
   color: #1b62b2;
 }

@@ -1,6 +1,6 @@
 import Bar from "../../components/bar"
 import { fetchRegister } from "../../store/modules/user";
-import '/src/pages/login/index.css';
+import '/src/pages/register/index.css';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -97,7 +97,7 @@ const Register = ()=>{
                 <span>记住密码</span>
               </label>
             </div>
-            <button className="login-btn" onClick={handleSubmit}>登 录</button>
+            <button className="register-btn" onClick={handleSubmit}>注 册</button>
             <div className="extra-link">
               <a href="#">意见反馈</a>
             </div>
