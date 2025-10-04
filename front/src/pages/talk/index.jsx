@@ -1,28 +1,49 @@
 import React, { useState, useRef, useEffect } from "react";
 import Bar from "../../components/bar";
-import { sendChatMessageAPI } from "../../apis/talk";
+import { sendChatMessageAPI, getConversationHistoryAPI } from "../../apis/talk";
 import "./index.css";
 
 const Talk = () => {
-  const [inputValue, setInputValue] = useState("");
-  const [messages, setMessages] = useState([]); // 聊天消息列表，初始为空
+    const [inputValue, setInputValue] = useState("");
+  const [messages, setMessages] = useState([]); // 聊天消息列表
   const [loading, setLoading] = useState(false);
-  const [showInitialText, setShowInitialText] = useState(true); // 控制是否显示引导语
+  const [historyList, setHistoryList] = useState([]); // 历史会话列表
+  const [currentSessionId, setCurrentSessionId] = useState(null); // 当前会话 ID
+  const [showInitialText, setShowInitialText] = useState(true); // 是否显示引导语
   const chatWindowRef = useRef(null);
 
-  // 自动滚动到底部
+  // 👉 获取历史对话列表
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await getConversationHistoryAPI(10);
+        if (res.conversations && Array.isArray(res.conversations)) {
+          setHistoryList(res.conversations);
+        } else {
+          setHistoryList([]);
+        }
+      } catch (error) {
+        console.error("获取历史对话失败:", error);
+        setHistoryList([]);
+      }
+    };
+
+    fetchHistory();
+  }, []);
+
+  // 👉 自动滚动到底部
   useEffect(() => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // 发送消息
+  // 👉 发送消息（支持 session_id）
   const handleSend = async () => {
     const trimmed = inputValue.trim();
     if (!trimmed || loading) return;
 
-    // 👉 关键：隐藏初始引导文字
+    // 隐藏引导文字
     setShowInitialText(false);
 
     // 添加用户消息
@@ -32,11 +53,22 @@ const Talk = () => {
     setLoading(true);
 
     try {
-      const res = await sendChatMessageAPI(trimmed);
+      // 发送消息，带上 session_id（如果是新对话，后端会返回新的 session_id）
+      const response = await sendChatMessageAPI({
+        message: trimmed,
+        session_id: currentSessionId, // 可能为 null
+      });
+
+      // 如果是新对话，保存后端返回的 session_id
+      if (response.session_id && !currentSessionId) {
+        setCurrentSessionId(response.session_id);
+      }
+
       const aiMsg = {
         id: Date.now() + 1,
         type: "ai",
-        text: res.assistant_response || "我暂时无法回答，请换一种方式提问。",
+        text:
+          response.assistant_response || "我暂时无法回答，请换一种方式提问。",
       };
       setMessages((prev) => [...prev, aiMsg]);
     } catch (error) {
@@ -51,11 +83,31 @@ const Talk = () => {
     }
   };
 
-  // 回车发送
+  // 👉 回车发送
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleSend();
     }
+  };
+
+  // 👉 点击历史条目（未来可扩展：加载该会话内容）
+  const handleLoadHistory = (session) => {
+    // 临时：仅切换当前会话 ID，清空消息（后续应加载真实消息）
+    setCurrentSessionId(session.session_id);
+    setMessages([]);
+    setShowInitialText(false);
+  };
+
+  // 👉 格式化时间显示
+  const formatTime = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString("zh-CN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).replace(/\//g, "-");
   };
 
   return (
@@ -65,7 +117,28 @@ const Talk = () => {
       {/* 左侧历史对话栏 */}
       <div className="history-box">
         <div className="history-title">历史对话</div>
-        <div className="history-empty">暂无历史对话</div>
+        <div className="history-empty">
+          {historyList.length > 0 ? (
+            historyList.map((session) => (
+              <div
+                key={session.session_id}
+                className={`history-item ${
+                  currentSessionId === session.session_id ? "active" : ""
+                }`}
+                onClick={() => handleLoadHistory(session)}
+              >
+                <span className="history-time">
+                  {formatTime(session.created_at)}
+                </span>
+                <span className="history-desc">
+                  {session.title || "未命名对话"}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="history-empty">暂无历史对话</div>
+          )}
+        </div>
       </div>
 
       {/* 右侧内容区域 */}

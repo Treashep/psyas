@@ -1,11 +1,12 @@
 import { request } from "../utils";
 
-// 1.发送消息给AI助手
-export function sendChatMessageAPI(message) {
+// 1.发送消息给AI助手（支持 session_id）
+export function sendChatMessageAPI(data) {
+  // data 可以是 { message: "内容", session_id: "xxx" }
   return request({
     url: '/api/conversation/chat',
     method: 'POST',
-    data: { message } // 只传 message 字段
+    data
   });
 }
 
