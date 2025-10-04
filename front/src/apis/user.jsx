@@ -9,10 +9,30 @@ export function loginAPI(formData){
   })
 }
 
+// 2. 注册请求
 export function registerAPI(formData){
   return request({
     url: '/api/auth/register',
     method: 'POST',
     data: formData
   })
+}
+
+// 3. 获取当前用户信息
+export function getMeAPI() {
+  return request({
+    url: '/api/auth/me',
+    method: 'GET'
+  });
+}
+
+// 4. 刷新 Token
+export function refreshAPI(refreshToken) {
+  return request({
+    url: '/api/auth/refresh',
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${refreshToken}`
+    }
+  });
 }
