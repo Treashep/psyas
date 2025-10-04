@@ -72,6 +72,7 @@ const Talk = () => {
       };
       setMessages((prev) => [...prev, aiMsg]);
     } catch (error) {
+      console.error("API 请求失败:", error);
       const errorMsg = {
         id: Date.now() + 1,
         type: "ai",
