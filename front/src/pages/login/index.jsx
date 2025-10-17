@@ -58,9 +58,7 @@ const Login = () => {
       <div className="right">
         <div className="login">
           <div className="title">
-            <span className="active" onClick={() => handleNavigation('/')}>登录</span>
-            <span className="divider">|</span>
-            <span onClick={() => handleNavigation('/register')}>注册</span>
+            <span className="active">登录</span>
           </div>
           <div className="form">
             <div className="input-group">
@@ -97,6 +95,7 @@ const Login = () => {
             <button className="login-btn" onClick={handleSubmit}>登 录</button>
             <div className="extra-link">
               <a href="#">意见反馈</a>
+              <span className="switch-link" onClick={() => handleNavigation('/register')}>注册</span>
             </div>
           </div>
         </div>

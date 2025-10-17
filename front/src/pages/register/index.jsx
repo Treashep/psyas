@@ -50,9 +50,7 @@ const Register = ()=>{
       <div className="right">
         <div className="register">
           <div className="title">
-            <span onClick={() => handleNavigation('/')}>登录</span>
-            <span className="divider">|</span>
-            <span className="active" onClick={() => handleNavigation('/register')}>注册</span>
+            <span className="active">注册</span>
           </div>
           <div className="form">
             <div className="input-group">
@@ -98,6 +96,7 @@ const Register = ()=>{
             <button className="register-btn" onClick={handleSubmit}>注 册</button>
             <div className="extra-link">
               <a href="#">意见反馈</a>
+              <span className="switch-link" onClick={() => handleNavigation('/')}>登录</span>
             </div>
           </div>
         </div>
