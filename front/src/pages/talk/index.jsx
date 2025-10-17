@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import Bar from "../../components/bar";
 import { sendChatMessageAPI, getConversationHistoryAPI } from "../../apis/talk";
 import "./index.css";
 
@@ -113,8 +112,6 @@ const Talk = () => {
 
   return (
     <div className="body">
-      <Bar />
-
       {/* 左侧历史对话栏 */}
       <div className="history-box">
         <div className="history-title">历史对话</div>

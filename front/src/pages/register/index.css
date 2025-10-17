@@ -2,48 +2,45 @@
 
 .body {
   display: flex;
-  flex-direction: row;
-  min-height: calc(100vh - 60px);
-  padding: 2rem;
-  background-color: #eefbfc;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #6C77A1, #FDD0D9);
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
 }
 
-.left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 50px;
-  width: 60%;
-  background-color: #eefbfc;
-  margin-left: -17px;
-  min-height: calc(100vh - 60px - 4rem);
+.quote {
+  text-align: center;
+  color: white;
+  margin-bottom: 2rem;
+  max-width: 600px;
 }
 
-.left p {
-  margin-top: 30px;
-  padding-bottom: 10px;
-  text-align: center;
-  color: #444444;
+.quote p {
+  font-size: 1.2rem;
+  margin: 1rem 0;
+}
+
+.quote .people {
+  font-style: italic;
+  margin-top: 0.5rem;
 }
 
 .right {
   display: flex;
-  flex-grow: 1;
-  margin-top: 15px;
-  min-height: calc(100vh - 60px);
-  padding: 3rem;
-  box-sizing: border-box;
-  overflow: auto;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
 /* ✅ 改为 .register，不是 .logregisterin */
 .register {
   width: 400px;
   padding: 30px;
-  background: #cbeee5;
+  background: rgba(255, 255, 255, 0.8);
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   margin-top: -50px;  

@@ -1,4 +1,3 @@
-import Bar from "../../components/bar"
 import '/src/pages/login/index.css';
 import { useNavigate } from 'react-router-dom';
 import { useState,useEffect } from "react";
@@ -25,7 +24,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 保存“记住密码”
+    // 保存"记住密码"
     if (form.remember) {
       localStorage.setItem('login_remember', JSON.stringify({
         username: form.username,
@@ -45,7 +44,7 @@ const Login = () => {
     }
   };
 
-    // 初始化：读取“记住的密码”
+    // 初始化：读取"记住的密码"
   useEffect(() => {
     const saved = localStorage.getItem('login_remember');
     if (saved) {
@@ -56,18 +55,6 @@ const Login = () => {
 
   return (
     <div className="body">
-      <Bar />
-      <div className="left">
-        <p>
-          那些知道为了什么而活的人几乎可以承受任何磨难；
-        </p>
-        <p>
-          谁懂得了为什么生活，谁就能承受任何一种生活。
-        </p>
-        <p className="people">
-          ————尼采
-        </p>
-      </div>
       <div className="right">
         <div className="login">
           <div className="title">
@@ -78,7 +65,7 @@ const Login = () => {
           <div className="form">
             <div className="input-group">
               <input 
-                name="password"
+                name="username"
                 type="text" 
                 placeholder="用户名/手机号/邮箱" 
                 autoComplete="off"

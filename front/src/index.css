@@ -5,7 +5,6 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -30,6 +29,7 @@ body {
   height: 100vh;
   overflow: hidden;
   box-sizing: border-box;
+  background: linear-gradient(135deg, #6C77A1, #FDD0D9);
 }
 
 h1 {

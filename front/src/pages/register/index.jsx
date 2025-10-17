@@ -1,4 +1,3 @@
-import Bar from "../../components/bar"
 import { fetchRegister } from "../../store/modules/user";
 import '/src/pages/register/index.css';
 import { useState } from "react";
@@ -23,7 +22,7 @@ const Register = ()=>{
     const handleSubmit = async (e) => {
       e.preventDefault();
 
-      // 保存“记住密码”
+      // 保存"记住密码"
       if (form.remember) {
         localStorage.setItem('login_remember', JSON.stringify({
           username: form.username,
@@ -48,18 +47,6 @@ const Register = ()=>{
 
   return (
     <div className="body">
-      <Bar />
-      <div className="left">
-        <p>
-          那些知道为了什么而活的人几乎可以承受任何磨难；
-        </p>
-        <p>
-          谁懂得了为什么生活，谁就能承受任何一种生活。
-        </p>
-        <p className="people">
-          ————尼采
-        </p>
-      </div>
       <div className="right">
         <div className="register">
           <div className="title">
@@ -70,7 +57,7 @@ const Register = ()=>{
           <div className="form">
             <div className="input-group">
               <input
-                name="password"
+                name="username"
                 type="text" 
                 placeholder="用户名/手机号/邮箱" 
                 autoComplete="off"
@@ -80,11 +67,22 @@ const Register = ()=>{
             </div>
             <div className="input-group">
               <input
+                name="password"
                 type="password" 
                 placeholder="请输入密码" 
                 autoComplete="off"
                 value={form.password}
                 onChange={(e) => setForm({...form, password: e.target.value})}
+              />
+            </div>
+            <div className="input-group">
+              <input
+                name="email"
+                type="text" 
+                placeholder="请输入邮箱" 
+                autoComplete="off"
+                value={form.email}
+                onChange={(e) => setForm({...form, email: e.target.value})}
               />
             </div>
             <div className="remember">
