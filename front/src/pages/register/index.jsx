@@ -1,5 +1,6 @@
 import { fetchRegister } from "../../store/modules/user";
 import '/src/pages/register/index.css';
+import '/src/components/icon/iconfont.css';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -14,23 +15,13 @@ const Register = ()=>{
 
     const [form, setForm] = useState({
       username: '',
-      password: '',
-      email:'',
-      remember: false
+      password: ''
     });
+
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e) => {
       e.preventDefault();
-
-      // 保存"记住密码"
-      if (form.remember) {
-        localStorage.setItem('login_remember', JSON.stringify({
-          username: form.username,
-          password: form.password
-        }));
-      } else {
-        localStorage.removeItem('login_remember');
-      }
 
       // 等待注册结果
       const result = await dispatch(fetchRegister(form));
@@ -47,57 +38,51 @@ const Register = ()=>{
 
   return (
     <div className="body">
-      <div className="right">
-        <div className="register">
-          <div className="title">
-            <span className="active">注册</span>
+      <div className="register">
+        <div className="title">
+          <span>注册</span>
+        </div>
+        <div className="form">
+          {/* 隐藏的虚拟输入框，用于欺骗浏览器的自动填充 */}
+          <input type="text" style={{display: 'none'}} />
+          <input type="password" style={{display: 'none'}} />
+          
+          <div className="input-group">
+            <span className="iconfont icon-yonghu input-icon"></span>
+            <input 
+              name="user-input"
+              type="text" 
+              placeholder="用户名" 
+              autoComplete="new-password"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
+              value={form.username}
+              onChange={(e) => setForm({...form, username: e.target.value})}
+            />
           </div>
-          <div className="form">
-            <div className="input-group">
-              <input
-                name="username"
-                type="text" 
-                placeholder="用户名/手机号/邮箱" 
-                autoComplete="off"
-                onChange={(e) => setForm({...form, username: e.target.value})}
-                value={form.username}
-              />
-            </div>
-            <div className="input-group">
-              <input
-                name="password"
-                type="password" 
-                placeholder="请输入密码" 
-                autoComplete="off"
-                value={form.password}
-                onChange={(e) => setForm({...form, password: e.target.value})}
-              />
-            </div>
-            <div className="input-group">
-              <input
-                name="email"
-                type="text" 
-                placeholder="请输入邮箱" 
-                autoComplete="off"
-                value={form.email}
-                onChange={(e) => setForm({...form, email: e.target.value})}
-              />
-            </div>
-            <div className="remember">
-              <label>
-                <input
-                  type="checkbox" 
-                  checked={form.remember}
-                  onChange={(e) => setForm({...form, remember: e.target.checked})}
-                />
-                <span>记住密码</span>
-              </label>
-            </div>
-            <button className="register-btn" onClick={handleSubmit}>注 册</button>
-            <div className="extra-link">
-              <a href="#">意见反馈</a>
-              <span className="switch-link" onClick={() => handleNavigation('/')}>登录</span>
-            </div>
+          <div className="input-group">
+            <span className="iconfont icon-suoding input-icon"></span>
+            <input 
+              name="pass-input"
+              type={showPassword ? "text" : "password"} 
+              placeholder="密码" 
+              autoComplete="new-password"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
+              value={form.password}
+              onChange={(e) => setForm({...form, password: e.target.value})}
+            />
+            <span 
+              className={`iconfont ${showPassword ? 'icon-yanjing1' : 'icon-yanjing'} password-toggle`}
+              onClick={() => setShowPassword(!showPassword)}
+            ></span>
+          </div>
+          <button className="register-btn" onClick={handleSubmit}>注 册</button>
+          <div className="extra-link">
+            <a href="#">忘记密码？</a>
+            <span className="switch-link" onClick={() => handleNavigation('/')}>登录</span>
           </div>
         </div>
       </div>
