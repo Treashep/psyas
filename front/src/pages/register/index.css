@@ -1,4 +1,4 @@
-.body {
+.register-body {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -57,10 +57,10 @@
 }
 
 .form .input-group {
+  position: relative;
   margin-bottom: 20px;
   display: flex;
   justify-content: center;
-  position: relative;
 }
 
 .form .input-icon {
@@ -90,21 +90,14 @@
   border-radius: 4px;
   font-size: 14px;
   outline: none;
-  background-color: #d8e3e3;
+  background-color: #e8f7f7;
   color: #333;
 }
 
 .form input[type="text"]:focus,
 .form input[type="password"]:focus,
 .form input[type="email"]:focus {
-  border-color: #c19dc0;
-}
-
-/* 当输入框有内容时改变背景颜色 */
-.form input[type="text"]:not(:placeholder-shown),
-.form input[type="password"]:not(:placeholder-shown),
-.form input[type="email"]:not(:placeholder-shown) {
-  background-color: #b9b5d2;
+  border-color: #1b62b2;
 }
 
 .register-btn {

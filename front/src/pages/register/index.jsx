@@ -37,7 +37,7 @@ const Register = ()=>{
     };
 
   return (
-    <div className="body">
+    <div className="register-body">
       <div className="register">
         <div className="title">
           <span>注册</span>
