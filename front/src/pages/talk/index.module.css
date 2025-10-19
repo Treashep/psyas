@@ -18,7 +18,7 @@
   flex-direction: column;
   justify-content: center;
   width: 260px;
-  height: 95%;
+  height: 93%;
   padding: 20px 0;
 }
 
@@ -26,7 +26,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80%;
+  width: 70%;
   padding: 12px;
   margin: 0 auto 20px;
   background: #c389c4;
@@ -50,9 +50,9 @@
 }
 
 .historyBox {
-  width: 90%;
-  height: 85%; 
-  border-radius: 10px;
+  width: 85%;
+  height: 90%; 
+  border-radius: 15px;
   border-right: 1px solid #eee;
   padding: 20px;
   background: #fafafa;
