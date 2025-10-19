@@ -1,17 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { sendChatMessageAPI, getConversationHistoryAPI } from "../../apis/talk";
-import "./index.css";
+import styles from "./index.module.css";
 
 const Talk = () => {
-    const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([]); // 聊天消息列表
   const [loading, setLoading] = useState(false);
   const [historyList, setHistoryList] = useState([]); // 历史会话列表
   const [currentSessionId, setCurrentSessionId] = useState(null); // 当前会话 ID
   const [showInitialText, setShowInitialText] = useState(true); // 是否显示引导语
   const chatWindowRef = useRef(null);
+  const [managementVisible, setManagementVisible] = useState(false);
 
-  // 👉 获取历史对话列表
+  // 获取历史对话列表
   useEffect(() => {
     const fetchHistory = async () => {
       try {
@@ -30,14 +31,14 @@ const Talk = () => {
     fetchHistory();
   }, []);
 
-  // 👉 自动滚动到底部
+  // 自动滚动到底部
   useEffect(() => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // 👉 发送消息（支持 session_id）
+  // 发送消息（支持 session_id）
   const handleSend = async () => {
     const trimmed = inputValue.trim();
     if (!trimmed || loading) return;
@@ -83,14 +84,14 @@ const Talk = () => {
     }
   };
 
-  // 👉 回车发送
+  // 回车发送
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleSend();
     }
   };
 
-  // 👉 点击历史条目（未来可扩展：加载该会话内容）
+  // 点击历史条目（未来可扩展：加载该会话内容）
   const handleLoadHistory = (session) => {
     // 临时：仅切换当前会话 ID，清空消息（后续应加载真实消息）
     setCurrentSessionId(session.session_id);
@@ -98,7 +99,19 @@ const Talk = () => {
     setShowInitialText(false);
   };
 
-  // 👉 格式化时间显示
+  // 创建新对话
+  const handleNewChat = () => {
+    setCurrentSessionId(null); // 重置会话ID
+    setMessages([]); // 清空消息
+    setShowInitialText(true); // 显示初始引导文字
+  };
+
+  const handleManagement = () => {
+    // 打开管理弹窗
+    setManagementVisible(!managementVisible);
+  };
+
+  // 格式化时间显示
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleString("zh-CN", {
@@ -111,40 +124,50 @@ const Talk = () => {
   };
 
   return (
-    <div className="body">
-      {/* 左侧历史对话栏 */}
-      <div className="history-box">
-        <div className="history-title">历史对话</div>
-        <div className="history-empty">
-          {historyList.length > 0 ? (
-            historyList.map((session) => (
-              <div
-                key={session.session_id}
-                className={`history-item ${
-                  currentSessionId === session.session_id ? "active" : ""
-                }`}
-                onClick={() => handleLoadHistory(session)}
-              >
-                <span className="history-time">
-                  {formatTime(session.created_at)}
-                </span>
-                <span className="history-desc">
-                  {session.title || "未命名对话"}
-                </span>
-              </div>
-            ))
-          ) : (
-            <div className="history-empty">暂无历史对话</div>
-          )}
+    <div className={styles.talkContainer}>
+      {/* 左侧边栏 */}
+      <div className={styles.leftSidebar}>
+        {/* 新增对话按钮 */}
+        <div className={styles.newChatBtn} onClick={handleNewChat}>
+          + 新增对话
+        </div>
+        {/* 历史对话栏 */}
+        <div className={styles.historyBox}>
+          <div className={styles.historyTitle}>历史对话</div>
+          <div className={styles.historyList}>
+            {historyList.length > 0 ? (
+              historyList.map((session) => (
+                <div
+                  key={session.session_id}
+                  className={`${styles.historyItem} ${
+                    currentSessionId === session.session_id ? styles.active : ""
+                  }`}
+                  onClick={() => handleLoadHistory(session)}
+                >
+                  <span className={styles.historyTime}>
+                    {formatTime(session.created_at)}
+                  </span>
+                  <span className={styles.historyDesc}>
+                    {session.title || "未命名对话"}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className={styles.historyEmpty}>暂无历史对话</div>
+            )}
+          </div>
+            <div className={styles.Management} onClick={handleManagement}>
+            管理历史记录
+          </div>
         </div>
       </div>
 
       {/* 右侧内容区域 */}
-      <div className="right-content">
+      <div className={styles.rightContent}>
         {/* 对话内容区域 */}
-        <div className="chat-area">
-          <div className="chat-window" ref={chatWindowRef}>
-            <div className="chat-text">
+        <div className={styles.chatArea}>
+          <div className={styles.chatWindow} ref={chatWindowRef}>
+            <div className={styles.chatText}>
               {/* === 初始引导文字：普通段落，无气泡 === */}
               {showInitialText && (
                 <div className="initial-intro-text">
@@ -168,11 +191,11 @@ const Talk = () => {
 
               {/* === 正式聊天记录：用户发送后出现，带气泡样式 === */}
               {!showInitialText && (
-                <div className="actual-messages">
+                <div className={styles.actualMessages}>
                   {messages.map((msg) => (
                     <div
                       key={msg.id}
-                      className={`message-bubble ${msg.type}-bubble`}
+                      className={`${styles.messageBubble} ${styles[msg.type + 'Bubble']}`}
                     >
                       <p>{msg.text}</p>
                     </div>
@@ -180,7 +203,7 @@ const Talk = () => {
 
                   {/* 加载中提示 */}
                   {loading && (
-                    <div className="message-bubble ai-bubble">
+                    <div className={`${styles.messageBubble} ${styles.aiBubble}`}>
                       <p><em>思考中...</em></p>
                     </div>
                   )}
@@ -191,18 +214,18 @@ const Talk = () => {
         </div>
 
         {/* 底部输入框 */}
-        <div className="input-area">
+        <div className={styles.inputArea}>
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="请输入您的问题..."
-            className="input-box"
+            className={styles.inputBox}
             disabled={loading}
           />
           <button
-            className="send-btn"
+            className={styles.sendBtn}
             onClick={handleSend}
             disabled={loading}
           >
