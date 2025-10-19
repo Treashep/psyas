@@ -1,13 +1,14 @@
 .talkContainer {
-  width: 90vw;
+  width: 80vw;
   height: 90vh;
   display: flex;
   flex-direction: row;
   background: #cfb4cf;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  position: relative;
-  top: 5vh;
-  left: 5vw;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   overflow: hidden;
   border-radius: 20px;
 }
