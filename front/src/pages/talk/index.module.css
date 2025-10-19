@@ -1,0 +1,258 @@
+.talkContainer {
+  width: 90vw;
+  height: 90vh;
+  display: flex;
+  flex-direction: row;
+  background: #cfb4cf;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  top: 5vh;
+  left: 5vw;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+/* 左侧新增对话按钮容器 */
+.leftSidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 260px;
+  height: 95%;
+  padding: 20px 0;
+}
+
+.newChatBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  padding: 12px;
+  margin: 0 auto 20px;
+  background: #c389c4;
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.newChatBtn:hover {
+  background: #bd77be;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(27, 98, 178, 0.3);
+}
+
+.newChatBtn:active {
+  transform: translateY(0);
+}
+
+.historyBox {
+  width: 90%;
+  height: 85%; 
+  border-radius: 10px;
+  border-right: 1px solid #eee;
+  padding: 20px;
+  background: #fafafa;
+  overflow-y: auto;
+  z-index: 10;
+  position: relative;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.historyTitle {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.historyEmpty {
+  color: #666;
+  font-size: 14px;
+}
+
+.historyItem {
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.historyItem:hover {
+  background-color: #f0f0f0;
+}
+
+.historyItem.active {
+  background-color: #e0e0e0;
+  font-weight: bold;
+}
+
+.historyTime {
+  font-size: 12px;
+  color: #666;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.historyDesc {
+  font-size: 14px;
+  color: #333;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actualMessages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.historyList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.rightContent {
+  flex: 1;
+  width: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 10px;  
+  margin-right: 0;
+  box-sizing: border-box;
+}
+
+.chatArea {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  padding: 5px 0 0;
+  overflow-y: auto;
+  justify-content: center;
+}
+
+.chatWindow {
+  width: 95%;
+  margin-right: 0;
+  padding: 0 20px;
+  background: #fff;
+  border-radius: 20px;
+  overflow-y: auto;
+}
+
+.chatText {
+  list-style: disc;
+  padding-left: 24px;
+  font-size: 16px;
+  line-height: 2;
+  color: #686868ff;
+}
+
+.inputArea {
+  width: calc(100% - 90px);  /* 20px左边距 + 50px右边距 */
+  align-items: center;
+  padding: 15px 10px;
+  margin: 20px 0 0 20px;  /* 移除右margin，因为已经在width中计算 */
+  background: #fff;
+  display: flex;
+  gap: 12px;
+  border: 2px solid #b3d2e4;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #a8d1e8;
+  box-sizing: border-box;
+}
+
+.inputBox {
+  flex: 1;
+  z-index: 10;
+  padding: 12px 16px;
+  background-color: #dfe5e5;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  outline: none;
+  color: #555;
+}
+
+.sendBtn {
+  padding: 10px 24px;
+  background: #1b62b2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* 消息气泡样式 */
+.messageBubble {
+  margin: 12px 0;
+  max-width: 85%;
+  line-height: 1.7;
+  word-wrap: break-word;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #555;
+  background-color: #c491c5;
+}
+
+.userBubble {
+  background: #dfe5e5;
+  align-self: flex-end;
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
+
+.aiBubble {
+  background: #f0f4f8;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+/* 在 .chatText 中启用 flex 布局 */
+.chatText {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 输入框禁用状态 */
+.inputBox:disabled,
+.sendBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;  /* 轨道透明 */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);  /* 滑块半透明 */
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);  /* 悬停时稍微深一点 */
+}
+
+/* Firefox 滚动条支持 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;  /* 滑块颜色 轨道颜色 */
+}
