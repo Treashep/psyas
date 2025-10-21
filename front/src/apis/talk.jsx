@@ -11,11 +11,11 @@ export function sendChatMessageAPI(data) {
 }
 
 // 2.获取对话历史
-export function getConversationHistoryAPI(limit = 10) {
+export function getConversationHistoryAPI(limit = 10, userId = null) {
   return request({
     url: '/api/conversation/history',
     method: 'GET',
-    params: { limit } // 使用 params 传递查询参数
+    params: { limit, user_id: userId } // 使用 params 传递查询参数
   });
 }
 
