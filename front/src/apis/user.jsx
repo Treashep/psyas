@@ -18,7 +18,7 @@ export function registerAPI(formData){
   })
 }
 
-// 3. 获取当前用户信息
+// 4. 获取当前用户信息
 export function getMeAPI() {
   return request({
     url: '/api/auth/me',
@@ -26,7 +26,7 @@ export function getMeAPI() {
   });
 }
 
-// 4. 刷新 Token
+// 5. 刷新 Token
 export function refreshAPI(refreshToken) {
   return request({
     url: '/api/auth/refresh',
