@@ -11,9 +11,15 @@ const request = axios.create({
 
 //添加请求拦截器
 request.interceptors.request.use((config)=>{
-    return config
-  },(error)=>{
-    return Promise.reject(error)
+  // 从localStorage获取token
+  const token = localStorage.getItem('token');
+  // 如果有token，添加到请求头
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config
+},(error)=>{
+  return Promise.reject(error)
 })
 
 // 添加响应拦截器
