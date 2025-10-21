@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { sendChatMessageAPI, getConversationHistoryAPI } from "../../apis/talk";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchUserInfo } from "../../store/modules/user";
 import styles from "./index.module.css";
+import { Helmet } from 'react-helmet-async';
 
 const Talk = () => {
   const [inputValue, setInputValue] = useState("");
@@ -9,14 +12,19 @@ const Talk = () => {
   const [historyList, setHistoryList] = useState([]); // 历史会话列表
   const [currentSessionId, setCurrentSessionId] = useState(null); // 当前会话 ID
   const [showInitialText, setShowInitialText] = useState(true); // 是否显示引导语
+  const [hasSentMessage, setHasSentMessage] = useState(false); // 是否已发送消息
   const chatWindowRef = useRef(null);
   const [managementVisible, setManagementVisible] = useState(false);
+  
+  // 获取用户信息
+  const dispatch = useDispatch();
+  const { username, userId, isLoggedIn } = useSelector(state => state.user);
 
   // 获取历史对话列表
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await getConversationHistoryAPI(10);
+        const res = await getConversationHistoryAPI(10, userId);
         if (res.conversations && Array.isArray(res.conversations)) {
           setHistoryList(res.conversations);
         } else {
@@ -28,8 +36,16 @@ const Talk = () => {
       }
     };
 
-    fetchHistory();
-  }, []);
+    // 如果已登录但没有用户信息，则获取用户信息
+    if (isLoggedIn && !username) {
+      dispatch(fetchUserInfo());
+    }
+
+    // 只有当有用户ID时才获取历史对话
+    if (userId) {
+      fetchHistory();
+    }
+  }, [isLoggedIn, username, userId, dispatch]);
 
   // 自动滚动到底部
   useEffect(() => {
@@ -45,6 +61,8 @@ const Talk = () => {
 
     // 隐藏引导文字
     setShowInitialText(false);
+    // 标记已发送消息
+    setHasSentMessage(true);
 
     // 添加用户消息
     const userMsg = { id: Date.now(), type: "user", text: trimmed };
@@ -53,10 +71,11 @@ const Talk = () => {
     setLoading(true);
 
     try {
-      // 发送消息，带上 session_id（如果是新对话，后端会返回新的 session_id）
+      // 发送消息，带上 session_id（如果是新对话，后端会返回新的 session_id）和用户ID
       const response = await sendChatMessageAPI({
         message: trimmed,
         session_id: currentSessionId, // 可能为 null
+        user_id: userId, // 添加用户ID
       });
 
       // 如果是新对话，保存后端返回的 session_id
@@ -97,6 +116,7 @@ const Talk = () => {
     setCurrentSessionId(session.session_id);
     setMessages([]);
     setShowInitialText(false);
+    setHasSentMessage(true);
   };
 
   // 创建新对话
@@ -104,6 +124,7 @@ const Talk = () => {
     setCurrentSessionId(null); // 重置会话ID
     setMessages([]); // 清空消息
     setShowInitialText(true); // 显示初始引导文字
+    setHasSentMessage(false); // 重置发送消息状态
   };
 
   const handleManagement = () => {
@@ -124,7 +145,47 @@ const Talk = () => {
   };
 
   return (
-    <div className={styles.talkContainer}>
+    <>
+      {/* SEO优化 - 页面元数据 */}
+      <Helmet>
+        <title>PSYAS - 专业心理咨询助手 | 在线心理支持与咨询</title>
+        <meta name="description" content="PSYAS是您的专业心理咨询助手，提供24/7在线心理支持、情绪疏导和心理健康咨询服务。通过AI技术，为您提供私密、安全、专业的心理辅导体验。" />
+        <meta name="keywords" content="心理咨询,心理健康,情绪疏导,心理支持,在线咨询,PSYAS,心理助手,心理辅导" />
+        <meta property="og:title" content="PSYAS - 专业心理咨询助手" />
+        <meta property="og:description" content="PSYAS是您的专业心理咨询助手，提供24/7在线心理支持与咨询服务" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="PSYAS - 专业心理咨询助手" />
+        <meta name="twitter:description" content="PSYAS是您的专业心理咨询助手，提供24/7在线心理支持与咨询服务" />
+        <link rel="canonical" href="https://psyas.com/talk" />
+        
+        {/* 结构化数据 - JSON-LD */}
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "PSYAS",
+              "alternateName": "专业心理咨询助手",
+              "description": "PSYAS是您的专业心理咨询助手，提供24/7在线心理支持、情绪疏导和心理健康咨询服务",
+              "url": "https://psyas.com",
+              "applicationCategory": "HealthApplication",
+              "operatingSystem": "Web",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "CNY"
+              },
+              "author": {
+                "@type": "Organization",
+                "name": "PSYAS Team"
+              }
+            }
+          `}
+        </script>
+      </Helmet>
+      
+      <div className={styles.talkContainer}>
       {/* 左侧边栏 */}
       <div className={styles.leftSidebar}>
         {/* 新增对话按钮 */}
@@ -156,7 +217,7 @@ const Talk = () => {
               <div className={styles.historyEmpty}>暂无历史对话</div>
             )}
           </div>
-            <div className={styles.Management} onClick={handleManagement}>
+          <div className={styles.managementBtn} onClick={handleManagement}>
             管理历史记录
           </div>
         </div>
@@ -164,27 +225,27 @@ const Talk = () => {
 
       {/* 右侧内容区域 */}
       <div className={styles.rightContent}>
+        {/* SEO优化的品牌标识 */}
+        <header className={styles.brandHeader} itemScope itemType="https://schema.org/Organization">
+          <h1 className={styles.brandTitle}>
+            <span className={styles.brandName} itemProp="name">PSYAS</span>
+            <span className={styles.brandTagline} itemProp="description">专业心理咨询助手</span>
+          </h1>
+          <meta itemProp="url" content="https://psyas.com" />
+          <meta itemProp="logo" content="https://psyas.com/logo.png" />
+          <link itemProp="sameAs" href="https://twitter.com/psyas" />
+          <link itemProp="sameAs" href="https://facebook.com/psyas" />
+        </header>
+        
         {/* 对话内容区域 */}
         <div className={styles.chatArea}>
           <div className={styles.chatWindow} ref={chatWindowRef}>
             <div className={styles.chatText}>
               {/* === 初始引导文字：普通段落，无气泡 === */}
               {showInitialText && (
-                <div className="initial-intro-text">
+                <div className={styles.initialIntroText}>
                   <p>
-                    心理分析最初由西格蒙德·弗洛伊德创立，是一种深入探索人类潜意识、情感冲突与人格结构的心理学方法。它认为，许多我们表面无法理解的情绪、行为与人际关系模式，其实源于童年经历、未被觉察的欲望、压抑的情感与内在冲突。
-                  </p>
-                  <p>
-                    心理分析不仅关注"你做了什么"，更关注"你为什么这么做"。它试图揭示那些隐藏在意识之下的心理动力。
-                  </p>
-                  <p>
-                    通过自由联想、梦境解析、移情分析等方法，心理分析帮助个体将潜意识中的内容带入意识层面，从而实现理解、整合与转化。
-                  </p>
-                  <p>
-                    今天的心理分析已融合了荣格的分析心理学、客体关系理论、依恋理论等多元视角，更加注重个体成长、自我实现与关系修复。它不再局限于"治疗疾病"，而是成为促进自我认知、提升心理弹性、实现内在自由的重要途径。
-                  </p>
-                  <p>
-                    在"心理分析助手"中，我们以人本主义与整合心理视角为基础，结合认知行为、正念与心理动力学理念，设计出温和而深刻的互动体验。你将逐步构建属于你自己的"内心地图"，走向更真实、更自由的自我。
+                    你好，{username || "用户"}，我是你的个人心理咨询助手。
                   </p>
                 </div>
               )}
@@ -209,31 +270,31 @@ const Talk = () => {
                   )}
                 </div>
               )}
+              {/* 底部输入框 */}
+              <div className={`${styles.inputArea} ${hasSentMessage ? styles.fixedInputArea : ''}`}>
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="有什么我可以帮到你的？"
+                  className={styles.inputBox}
+                  disabled={loading}
+                />
+                <button
+                  className={styles.sendBtn}
+                  onClick={handleSend}
+                  disabled={loading}
+                >
+                  {loading ? "发送中..." : "发送"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* 底部输入框 */}
-        <div className={styles.inputArea}>
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="请输入您的问题..."
-            className={styles.inputBox}
-            disabled={loading}
-          />
-          <button
-            className={styles.sendBtn}
-            onClick={handleSend}
-            disabled={loading}
-          >
-            {loading ? "发送中..." : "发送"}
-          </button>
-        </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
