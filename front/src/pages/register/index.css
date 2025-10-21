@@ -105,11 +105,12 @@
   height: 45px;
   padding: 10px;
   margin-top: 15px;
-  background: #1b62b2;
-  color: #fff;
+  background: rgba(180, 143, 191, 0.7);
+  color: #333;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   margin-bottom: 25px; /* 进一步减少按钮下方间距 */
 }
